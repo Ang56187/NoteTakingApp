@@ -12,7 +12,7 @@ const headerBar = () => {
             opacity: 0.8,
             alignSelf: 'stretch',
             alignItems: 'center',
-            justifyContent: 'space-',
+            justifyContent: 'space-between',
         }}>
             <HamburgerBtn/>
             <Text style = {{color: "red"}}>dfg u!!</Text>
