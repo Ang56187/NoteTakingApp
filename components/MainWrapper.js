@@ -8,30 +8,37 @@ class MainWrapper extends React.Component{
         super(props);
         //create new prop and set state as false
         this.state = {
-            onClicked: false
+            onClickedHamburgerBtn: false,
+            onClickedSearchBtn: false
         }
         //new prop
-        //bind creates new func to perform same as method handleButtonOnClick
-        this.handleButtonOnClick = this.handleButtonOnClick.bind(this);
+        //bind creates new func to perform same as  both method handleButtonOnClick
+        this.handleHamburgerBtnOnClick = this.handleHamburgerBtnOnClick.bind(this);
+        this.handleSearchBtnOnClick = this.handleSearchBtnOnClick.bind(this);
     }
 
-    //set method for button click
-    handleButtonOnClick(){
+    //set method for buttons click
+    handleHamburgerBtnOnClick(){
         this.setState({
-            onClicked : ! this.state.onClicked
+            onClickedHamburgerBtn : ! this.state.onClickedHamburgerBtn
+        }) 
+    }
+
+    handleSearchBtnOnClick(){
+        this.setState({
+            onClickedSearchBtn : ! this.state.onClickedSearchBtn
         }) 
     }
 
     render(){
-        //set variables for styles to change 
-
-        
         return(
             <View style={styles.container}>
             <StatusBarBackground style={{backgroundColor:'midnightblue'}}/>
             <HeaderBar 
-                onClicked = {this.state.onClicked}
-                handleButtonOnClick = {this.handleButtonOnClick}
+                onClickedHamburgerBtn = {this.state.onClickedHamburgerBtn}
+                onClickedSearchBtn = {this.state.onClickedSearchBtn}
+                handleHamburgerBtnOnClick = {this.handleHamburgerBtnOnClick}
+                handleSearchBtnOnClick = {this.handleSearchBtnOnClick}
             />
             <Text>Why are you running!</Text>
           </View>
