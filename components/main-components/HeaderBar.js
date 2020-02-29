@@ -45,11 +45,14 @@ class HeaderBar extends React.Component{
 
         return(
             <View style = {{
-                height: 50,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                zIndex: 1,
+                width: '100%',
                 flexDirection: 'row',
                 backgroundColor: '#FF9797',
-                opacity: 0.8,
-                alignSelf: 'stretch',
+                opacity: 0.9,
                 alignItems: 'center',
                 justifyContent: 'space-between',
             }}>
@@ -65,7 +68,6 @@ class HeaderBar extends React.Component{
                     /> 
                 }
                 />
-
                 <Button 
                     type = "clear" 
                     onPress={() => this.props.handleSearchBtnOnClick()}

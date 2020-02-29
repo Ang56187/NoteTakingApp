@@ -1,28 +1,24 @@
 import React,{Component} from 'react';
 import { StyleSheet,Text,View,FlatList } from 'react-native';
-import HeaderBar from './header-components/HeaderBar';
+import { Button } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Ionicons';
+import HeaderBar from './main-components/HeaderBar';
+import ScrollViewNotes from './main-components/ScrollViewNotes';
 import Constants from 'expo-constants';
+import NoteList from '../objects/NotesList';
 
 
-class MainWrapper extends React.Component{
+export default class MainWrapper extends React.Component{
     constructor(props){
         super(props);
-        //create new prop and set state as false
 
-        var a;
-        var arr=[];
-        for (a=0;a<100;a++){
-            arr[a] = {
-                id: a+'-32',
-                title: a
-            }
-            
-        }
+        var notes = new NoteList();
 
+        //setting the states to be passed down to its children
         this.state = {
             onClickedHamburgerBtn: false,
             onClickedSearchBtn: false,
-            noteTitles: arr
+            noteTitles: notes.noteList
         }
         //new prop
         //bind creates new func to perform same as  both method handleButtonOnClick
@@ -46,23 +42,28 @@ class MainWrapper extends React.Component{
     render(){
         return(
             <View style={styles.container}>
-            <HeaderBar 
-                onClickedHamburgerBtn = {this.state.onClickedHamburgerBtn}
-                onClickedSearchBtn = {this.state.onClickedSearchBtn}
-                handleHamburgerBtnOnClick = {this.handleHamburgerBtnOnClick}
-                handleSearchBtnOnClick = {this.handleSearchBtnOnClick}
-            />
-            <FlatList 
-                contentContainerStyle = {styles.scroll}
-                data={this.state.noteTitles}
-                numColumns={2}
-                renderItem={({ item }) => (
-                    <View style={styles.viewInScroll}>
-                        <Text style={styles.note}>{item.title}</Text>
-                    </View>
-                )}
-                keyExtractor={item=> item.id}
-            />
+                {/* custom component header with hamburger bar and search button (from HeaderBar.js)*/}
+                <HeaderBar 
+                    onClickedHamburgerBtn = {this.state.onClickedHamburgerBtn}
+                    onClickedSearchBtn = {this.state.onClickedSearchBtn}
+                    handleHamburgerBtnOnClick = {this.handleHamburgerBtnOnClick}
+                    handleSearchBtnOnClick = {this.handleSearchBtnOnClick}
+                />
+                {/* custom scroll view with 2 columns (from ScrollViewNotes.js) */}
+                <ScrollViewNotes
+                    noteTitles = {this.state.noteTitles}    
+                />
+                {/* button to add new note */}
+                <Button
+                    type = {"clear"}
+                    containerStyle={styles.addButtonView}
+                    icon=
+                    {<Icon
+                    name= {"md-add"} 
+                    size = {35} 
+                    style={{color: 'white'}}
+                    />}
+                /> 
           </View>
         );
     }
@@ -76,20 +77,15 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       alignItems: 'stretch'
     },
-    scroll:{
-        alignItems: 'center',
-        width: '100%'
-    },    
-    viewInScroll:{
-        backgroundColor: '#FF3434',
-        alignItems: 'center',
-        padding: 10,
-        margin: 15,
-        height: 50,
-        width: 150
-    },
-    note:{
+    addButtonView:{
+        position: 'absolute',
+        bottom: 20,
+        zIndex: 1,
+        alignSelf: 'center',
+        width: 55,
+        backgroundColor:'#00BCD4',
+        borderRadius: 70,
+        borderWidth: 1,
+        borderColor: '#00BCD4'
     }
   });  
-
-export default MainWrapper;
