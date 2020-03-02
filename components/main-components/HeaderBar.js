@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import { Text,View } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button,SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons'
 
 class HeaderBar extends React.Component{
@@ -43,6 +43,7 @@ class HeaderBar extends React.Component{
         var _styleSearchBtn = this.changeButton(this.props.onClickedSearchBtn);
         var _styleSearchIcon = this.changeIcon(this.props.onClickedSearchBtn);
 
+        var vak="dsa";
         return(
             <View style = {{
                 position: 'absolute',
@@ -68,6 +69,19 @@ class HeaderBar extends React.Component{
                     /> 
                 }
                 />
+                <SearchBar
+                    placeholder="Type Here..."
+                    platform = "android"
+                    searchIcon = {false}
+                    cancelIcon = {false}
+                    containerStyle ={{
+                        width: 260,
+                        height: 40,
+                        justifyContent: 'center'
+                    }}
+                    value = {"asa"}
+                    onChangeText = {console.log("e") }                
+                    />
                 <Button 
                     type = "clear" 
                     onPress={() => this.props.handleSearchBtnOnClick()}
