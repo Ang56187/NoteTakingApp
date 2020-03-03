@@ -6,12 +6,17 @@ import HeaderBar from './main-components/HeaderBar';
 import ScrollViewNotes from './main-components/ScrollViewNotes';
 import Constants from 'expo-constants';
 import NoteList from '../objects/NotesList';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
+
+//variables
+var filteredNotes = [];
+const Drawer = createDrawerNavigator();
+
 
 export default class MainWrapper extends React.Component{
     constructor(props){
         super(props);
-
-        var notes = new NoteList();
 
         //setting the states to be passed down to its children
         this.state = {
@@ -21,7 +26,9 @@ export default class MainWrapper extends React.Component{
             //state that triggers upon reaching end of scroll
             onEndScroll: false,
             //state that accumulate all notes to be sent to scroll view
-            noteTitles: notes.noteList,
+            noteTitles: new NoteList().noteList,
+            //search input,
+            search: '',
             //for animation purposes
             animateX: new Animated.Value(50),
             animateBottomPad: new Animated.Value(10)
@@ -32,7 +39,7 @@ export default class MainWrapper extends React.Component{
         this.handleHamburgerBtnOnClick = this.handleHamburgerBtnOnClick.bind(this);
         this.handleSearchBtnOnClick = this.handleSearchBtnOnClick.bind(this);
         this.handleOnEndScroll = this.handleOnEndScroll.bind(this);
-
+        this.handleSearch = this.handleSearch.bind(this);
     }
 
     //set method for buttons click
@@ -46,6 +53,31 @@ export default class MainWrapper extends React.Component{
         this.setState({
             onClickedSearchBtn : ! this.state.onClickedSearchBtn
         }) 
+    }
+    
+    //set method for filling in search input words
+    handleSearch= search =>{ 
+        //filter if something typed in search bar
+        if(search !== ""){
+            //assign filtered
+            filteredNotes = new NoteList().noteList.filter(item=>{
+                const lowerCaseItem = item.title.toLowerCase();
+                const filter = search.toLowerCase();
+
+                //check if search word exists as note title
+                //if yes, added to filteredNotes
+                return lowerCaseItem.includes(filter);
+            });
+        }
+        else{
+            filteredNotes = new NoteList().noteList;
+        }
+  
+        this.setState({
+            noteTitles: filteredNotes,
+            onEndScroll: false,
+            search
+        });
     }
 
     //set method upon reaching end of scroll
@@ -68,6 +100,8 @@ export default class MainWrapper extends React.Component{
         return Animated.sequence([ani2,ani1]).start();
     }
 
+
+
     render(){
         if (this.state.onEndScroll){
             this.expandButton();
@@ -78,12 +112,21 @@ export default class MainWrapper extends React.Component{
 
         return(
             <View style={styles.container}>
+                <NavigationContainer>
+                    {/* <Drawer.Navigator initialRouteName="Home">
+                        <Drawer.Screen name="Home" component={HomeScreen} />
+                        <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+                    </Drawer.Navigator> */}
+                </NavigationContainer>
+
                 {/* custom component header with hamburger bar and search button (from HeaderBar.js)*/}
                 <HeaderBar 
                     onClickedHamburgerBtn = {this.state.onClickedHamburgerBtn}
                     onClickedSearchBtn = {this.state.onClickedSearchBtn}
                     handleHamburgerBtnOnClick = {this.handleHamburgerBtnOnClick}
                     handleSearchBtnOnClick = {this.handleSearchBtnOnClick}
+                    search = {this.state.search}
+                    handleSearch = {this.handleSearch}
                 />
                 {/* custom scroll view with 2 columns (from ScrollViewNotes.js) */}
                 <ScrollViewNotes

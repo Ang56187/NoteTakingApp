@@ -18,8 +18,6 @@ export default class ScrollViewNotes extends React.Component{
     };
 
     render(){
-        var test = false;
-        var counter = 0;
 
         return(
             <FlatList 

@@ -4,8 +4,8 @@
     <list default="true" id="14202107-d9e3-465f-a736-f55d052da7df" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/MainWrapper.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainWrapper.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/main-components/HeaderBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/main-components/HeaderBar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/main-components/ScrollViewNotes.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/main-components/ScrollViewNotes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/objects/NotesList.js" beforeDir="false" afterPath="$PROJECT_DIR$/objects/NotesList.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
