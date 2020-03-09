@@ -43,13 +43,13 @@ class HeaderBar extends React.Component{
     //method to animate  search bar
     animateSearch = (x) =>{
         if(x){
-            var ani1 = Animated.timing(this.state.animateWidth,{toValue: 240,duration: 500,});
-            var ani2 = Animated.timing(this.state.animateOpacity,{toValue: 1,duration: 400,});
+            const ani1 = Animated.timing(this.state.animateWidth,{toValue: 240,duration: 400,});
+            const ani2 = Animated.timing(this.state.animateOpacity,{toValue: 1,duration: 200,});
             return Animated.parallel([ani1,ani2]).start();
         }
         else{
-            var ani1 = Animated.timing(this.state.animateWidth,{toValue: 0,duration: 500,});
-            var ani2 = Animated.timing(this.state.animateOpacity,{toValue: 0,duration: 400,});
+            const ani1 = Animated.timing(this.state.animateWidth,{toValue: 0,duration: 400,});
+            const ani2 = Animated.timing(this.state.animateOpacity,{toValue: 0,duration: 200,});
             return Animated.parallel([ani1,ani2]).start();
         }
 
@@ -65,10 +65,6 @@ class HeaderBar extends React.Component{
 
 
         this.animateSearch(this.props.onClickedSearchBtn);
-
-        if(!this.props.onClickedSearchBtn){
-            
-        }
 
         return(
             <View style = {{
@@ -113,7 +109,7 @@ class HeaderBar extends React.Component{
                         containerStyle = {{height: 40, justifyContent: 'center'}}           
                     />
                 </Animated.View>
-
+                {/* Search button at right */}
                 <Button 
                     type = "clear" 
                     onPress={() => {                        

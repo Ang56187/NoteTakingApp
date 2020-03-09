@@ -3,9 +3,15 @@
   <component name="ChangeListManager">
     <list default="true" id="14202107-d9e3-465f-a736-f55d052da7df" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MainWrapper.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainWrapper.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/main-components/HeaderBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/main-components/HeaderBar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/main-components/ScrollViewNotes.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/main-components/ScrollViewNotes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/MainWrapper.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/main-components/DrawerNavigator.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/main-components/HeaderBar.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/main-components/ScrollViewNotes.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/objects/Note.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/objects/NotesList.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

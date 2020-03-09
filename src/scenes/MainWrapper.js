@@ -1,13 +1,14 @@
 import React,{Component} from 'react';
-import { StyleSheet,View,Animated} from 'react-native';
+import { StyleSheet,View,Text,StatusBar,Animated } from 'react-native';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
-import HeaderBar from './main-components/HeaderBar';
-import ScrollViewNotes from './main-components/ScrollViewNotes';
+import HeaderBar from '../components/main-components/HeaderBar';
+import ScrollViewNotes from '../components/main-components/ScrollViewNotes';
 import Constants from 'expo-constants';
 import NoteList from '../objects/NotesList';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
+// import Animated, { Easing } from 'react-native-reanimated';
 
 //variables
 var filteredNotes = [];
@@ -31,7 +32,11 @@ export default class MainWrapper extends React.Component{
             search: '',
             //for animation purposes
             animateX: new Animated.Value(50),
-            animateBottomPad: new Animated.Value(10)
+            animateBottomPad: new Animated.Value(10),
+
+            //for interporation purposes (animate the add button)
+            scrollSize : 0,
+            scaleX: new Animated.Value(20)
         }
 
         //new prop
@@ -40,6 +45,16 @@ export default class MainWrapper extends React.Component{
         this.handleSearchBtnOnClick = this.handleSearchBtnOnClick.bind(this);
         this.handleOnEndScroll = this.handleOnEndScroll.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
+        this.handleScrollSize = this.handleScrollSize.bind(this);
+        this.handleScrollIndex = this.handleScrollIndex.bind(this);
+    }
+    //retrieve scroll values from scroll component (ScrollViewNotes)
+    handleScrollSize(x){
+        this.setState({scrollSize:x})
+    }
+
+    handleScrollIndex(x){
+        this.setState({scrollIndex: x})
     }
 
     //set method for buttons click
@@ -75,7 +90,6 @@ export default class MainWrapper extends React.Component{
   
         this.setState({
             noteTitles: filteredNotes,
-            onEndScroll: false,
             search
         });
     }
@@ -87,38 +101,41 @@ export default class MainWrapper extends React.Component{
         });
     }
 
-    //set method for animation
+    //for normal Animated
     expandButton = () =>{
-        var ani1 = Animated.timing(this.state.animateBottomPad,{toValue: 0,duration: 300,});
-        var ani2 = Animated.timing(this.state.animateX,{toValue: 1000,duration: 500,});
-        return Animated.sequence([ani1,ani2]).start();
+        var ani1 = Animated.timing(this.state.animateBottomPad,
+            {duration: 399,toValue: 0});
+        var ani2 = Animated.timing(this.state.animateX,
+            {toValue: 800,duration: 500});
+        return Animated.sequence([ani1,ani2]);
     }
 
     shrinkButton = () =>{
-        var ani1 = Animated.timing(this.state.animateBottomPad,{toValue: 10,duration: 300,});
-        var ani2 = Animated.timing(this.state.animateX,{toValue: 50,duration: 600,});
-        return Animated.sequence([ani2,ani1]).start();
+        var ani1 = Animated.timing(this.state.animateBottomPad,
+            {duration: 300,toValue: 10});
+        var ani2 = Animated.timing(this.state.animateX,
+            {toValue: 50,duration: 500});
+        return Animated.sequence([ani2,ani1]);
     }
 
 
-
+    //where actual components were rendered
     render(){
-        if (this.state.onEndScroll){
-            this.expandButton();
+        //scrollIndex(0 is bottom, {whatever} is the top, depends on scroll size)
+        //close to bottom
+        if (this.state.scrollIndex <= 8 && !this.state.onClickedSearchBtn){
+            this.shrinkButton().stop();
+            this.expandButton().start();
         }
-        else{
-            this.shrinkButton();
+        //not close to bottom
+        if (this.state.scrollIndex > 10 || this.state.onClickedSearchBtn){
+            this.expandButton().stop();
+            this.shrinkButton().start();
         }
 
         return(
             <View style={styles.container}>
-                <NavigationContainer>
-                    {/* <Drawer.Navigator initialRouteName="Home">
-                        <Drawer.Screen name="Home" component={HomeScreen} />
-                        <Drawer.Screen name="Notifications" component={NotificationsScreen} />
-                    </Drawer.Navigator> */}
-                </NavigationContainer>
-
+                <StatusBar/>
                 {/* custom component header with hamburger bar and search button (from HeaderBar.js)*/}
                 <HeaderBar 
                     onClickedHamburgerBtn = {this.state.onClickedHamburgerBtn}
@@ -131,11 +148,14 @@ export default class MainWrapper extends React.Component{
                 {/* custom scroll view with 2 columns (from ScrollViewNotes.js) */}
                 <ScrollViewNotes
                     noteTitles = {this.state.noteTitles}
-                    handleOnEndScroll = {this.handleOnEndScroll}    
+                    handleOnEndScroll = {this.handleOnEndScroll} 
+                    handleScrollSize = {this.handleScrollSize}   
+                    handleScrollIndex = {this.handleScrollIndex}
                 />
                 {/* button to add new note */}
                 <Animated.View 
-                    style = {{
+                    style = 
+                     {{ 
                         position: 'absolute',
                         bottom: this.state.animateBottomPad,
                         zIndex: 1,
