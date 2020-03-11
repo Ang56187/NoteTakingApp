@@ -4,21 +4,16 @@ import { createDrawerNavigator,
           DrawerItem, } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import React,{Component} from 'react';
-import { StyleSheet,View,Text } from 'react-native';
-import MainWrapper from '../scenes/MainWrapper';
+import { StyleSheet,View,Text,TouchableOpacity } from 'react-native';
+import MainWrapperHook from '../scenes/MainWrapper';
 import Animated from 'react-native-reanimated';
 import {LinearGradient} from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const Drawer = createDrawerNavigator();
 
-function home({navigation}){
-    return <MainWrapper/>
-}
-
-
+//create custom side drawer (including animation and contents in it)
 function customDrawerContent({progress,...rest}) {
-
   //animation for sliding out side drawer
   const translateX = Animated.interpolate(progress,{
     inputRange: [0, 1],
@@ -32,7 +27,6 @@ function customDrawerContent({progress,...rest}) {
 
   const overallWidth = 230;
   const overallHeight = 500;
-
 
   return (
     <Animated.View 
@@ -54,6 +48,7 @@ function customDrawerContent({progress,...rest}) {
           contentContainerStyle = {styles.drawerScrollStyle}
         >
           <Text style={styles.headerTextStyle} >Library</Text>
+          {/* Drawer items that filters or sort notes to be shown */}
           <DrawerItem
             label="Recent"
             icon = {() =>
@@ -102,6 +97,38 @@ function customDrawerContent({progress,...rest}) {
             focused = {false}
             onPress={() => {}}
           />
+          {/* Set line seperation between settings btn and drawe items */}
+          <View
+            style = {styles.lineStyle} 
+          />
+          {/* Own seperate button to settings page */}
+          <TouchableOpacity 
+              style = {{
+              marginTop: 15,
+              borderWidth: 1,
+              borderColor: 'white',
+              alignItems : 'center',
+              borderRadius: 20,
+              backgroundColor: 'transparent',
+              flexDirection: 'row',
+              borderRadius: 20,
+              width: 200,
+              height: 50,
+              margin: 10
+            }}
+          >
+            <Icon 
+              name='md-settings'
+              size= {30}
+              color='#ffffff'
+              style = {styles.iconStyle}
+            />
+            <Text style={{
+                  color: 'white',
+                  fontSize: 18,
+                  marginLeft:30
+            }}>Settings</Text>
+          </TouchableOpacity>
         </DrawerContentScrollView>
       </LinearGradient>
     </Animated.View>
@@ -109,22 +136,28 @@ function customDrawerContent({progress,...rest}) {
 }
 
 export default class DrawerNavigator extends React.Component{
+    //method to add main page component
+    home = ({navigation}) => {
+      return <MainWrapperHook 
+                navigation = {navigation} 
+            />
+    }
 
-    render(){
-        return(
-            <NavigationContainer>
-            <Drawer.Navigator 
-              initialRouteName="home"   
-              drawerStyle={{
-                            backgroundColor: 'transparent',
-                            justifyContent: 'center',
-                          }}
-              drawerContent={props => customDrawerContent(props)}
-            >
-              <Drawer.Screen name="home" component={home} />
-            </Drawer.Navigator>
-          </NavigationContainer>
-        )
+    render(){  
+      return(
+          <NavigationContainer>
+          <Drawer.Navigator 
+            initialRouteName="home"   
+            drawerStyle={{
+                          backgroundColor: 'transparent',
+                          justifyContent: 'center',
+                        }}
+            drawerContent={props => customDrawerContent(props)}
+          >
+            <Drawer.Screen name="home" component={this.home}/>
+          </Drawer.Navigator>
+        </NavigationContainer>
+      )
     }
 }
 
@@ -145,7 +178,24 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     paddingBottom: 15
   },
-  labelStyle:{color: 'white',fontSize: 18},
-  itemContainerStyle:{borderRadius:20,width: 210},
-  iconStyle:{marginLeft:10}
+  labelStyle:
+  {
+    color: 'white',
+    fontSize: 18
+  },
+  itemContainerStyle:
+  {
+    borderRadius:20,
+    width: 210,
+  },
+  iconStyle:{
+    marginLeft:10
+  },
+  lineStyle: {
+    width: 200,
+    height: 1,
+    opacity: 0.5,
+    backgroundColor: 'white',
+    marginTop: 140
+  }
 });  

@@ -50,7 +50,6 @@ export default class ScrollViewNotes extends React.Component{
                         padding: 10,
                         margin: 10,
                         width: 160,
-                        elevation: 3 ,
                         flexDirection: 'column',
                         justifyContent: 'space-between'
                     }}

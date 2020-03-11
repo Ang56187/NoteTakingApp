@@ -43,12 +43,12 @@ class HeaderBar extends React.Component{
     //method to animate  search bar
     animateSearch = (x) =>{
         if(x){
-            const ani1 = Animated.timing(this.state.animateWidth,{toValue: 240,duration: 400,});
-            const ani2 = Animated.timing(this.state.animateOpacity,{toValue: 1,duration: 200,});
+            const ani1 = Animated.timing(this.state.animateWidth,{toValue: 240,duration: 500,});
+            const ani2 = Animated.timing(this.state.animateOpacity,{toValue: 1,duration: 300,});
             return Animated.parallel([ani1,ani2]).start();
         }
         else{
-            const ani1 = Animated.timing(this.state.animateWidth,{toValue: 0,duration: 400,});
+            const ani1 = Animated.timing(this.state.animateWidth,{toValue: 0,duration: 500,});
             const ani2 = Animated.timing(this.state.animateOpacity,{toValue: 0,duration: 200,});
             return Animated.parallel([ani1,ani2]).start();
         }
@@ -96,7 +96,7 @@ class HeaderBar extends React.Component{
                 <Animated.View 
                     style=
                     {{width: this.state.animateWidth,
-                    opacity: this.state.animateOpacity
+                    opacity: this.state.animateOpacity,
                     }}>
                     <SearchBar
                         placeholder="Search notes.."
@@ -106,7 +106,7 @@ class HeaderBar extends React.Component{
                         ref={search => this.search = search}
                         value = {this.props.search}
                         onChangeText = {this.props.handleSearch}     
-                        containerStyle = {{height: 40, justifyContent: 'center'}}           
+                        containerStyle = {{height: 40, justifyContent: 'center',borderRadius: 20}}           
                     />
                 </Animated.View>
                 {/* Search button at right */}

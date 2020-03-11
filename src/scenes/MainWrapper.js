@@ -1,21 +1,29 @@
-import React,{Component} from 'react';
+import React,{Component,useState} from 'react';
 import { StyleSheet,View,Text,StatusBar,Animated } from 'react-native';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
-import HeaderBar from '../components/main-components/HeaderBar';
-import ScrollViewNotes from '../components/main-components/ScrollViewNotes';
+import HeaderBar from '../components/main-wrapper/HeaderBar';
+import ScrollViewNotes from '../components/main-wrapper/ScrollViewNotes';
 import Constants from 'expo-constants';
 import NoteList from '../objects/NotesList';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import { createDrawerNavigator,useIsDrawerOpen } from '@react-navigation/drawer';
+import { useNavigation } from '@react-navigation/native';
 // import Animated, { Easing } from 'react-native-reanimated';
 
 //variables
 var filteredNotes = [];
-const Drawer = createDrawerNavigator();
 
+//wrapped around class component so it can actually receive hooks
+//(due to only restricted to functions)
+const MainWrapperHook = (props) => {  
 
-export default class MainWrapper extends React.Component{
+    return <MainWrapper
+        navigation={props.navigation}/>
+}
+
+export default MainWrapperHook;
+
+class MainWrapper extends React.Component{
     constructor(props){
         super(props);
 
@@ -38,7 +46,6 @@ export default class MainWrapper extends React.Component{
             scrollSize : 0,
             scaleX: new Animated.Value(20)
         }
-
         //new prop
         //bind creates new func to perform same as  both method handleButtonOnClick
         this.handleHamburgerBtnOnClick = this.handleHamburgerBtnOnClick.bind(this);
@@ -47,7 +54,17 @@ export default class MainWrapper extends React.Component{
         this.handleSearch = this.handleSearch.bind(this);
         this.handleScrollSize = this.handleScrollSize.bind(this);
         this.handleScrollIndex = this.handleScrollIndex.bind(this);
+
+        //handle drawer toggle, changes state of hamburger btn
+        const openDrawer = this.props.navigation.addListener('drawerOpen',e=>{
+            this.setState({onClickedHamburgerBtn: true});
+        });
+        const closeDrawer = this.props.navigation.addListener('drawerClose',e=>{
+            this.setState({onClickedHamburgerBtn: false});
+        });
+    
     }
+
     //retrieve scroll values from scroll component (ScrollViewNotes)
     handleScrollSize(x){
         this.setState({scrollSize:x})
@@ -61,7 +78,7 @@ export default class MainWrapper extends React.Component{
     handleHamburgerBtnOnClick(){
         this.setState({
             onClickedHamburgerBtn : ! this.state.onClickedHamburgerBtn
-        }) 
+        })
     }
 
     handleSearchBtnOnClick(){
@@ -104,7 +121,7 @@ export default class MainWrapper extends React.Component{
     //for normal Animated
     expandButton = () =>{
         var ani1 = Animated.timing(this.state.animateBottomPad,
-            {duration: 399,toValue: 0});
+            {duration: 399,toValue: -0.1});
         var ani2 = Animated.timing(this.state.animateX,
             {toValue: 800,duration: 500});
         return Animated.sequence([ani1,ani2]);
@@ -114,25 +131,29 @@ export default class MainWrapper extends React.Component{
         var ani1 = Animated.timing(this.state.animateBottomPad,
             {duration: 300,toValue: 10});
         var ani2 = Animated.timing(this.state.animateX,
-            {toValue: 50,duration: 500});
+            {toValue: 50,duration: 600});
         return Animated.sequence([ani2,ani1]);
     }
-
 
     //where actual components were rendered
     render(){
         //scrollIndex(0 is bottom, {whatever} is the top, depends on scroll size)
         //close to bottom
-        if (this.state.scrollIndex <= 8 && !this.state.onClickedSearchBtn){
+        if (this.state.scrollIndex <= 10 && !this.state.onClickedSearchBtn){
             this.shrinkButton().stop();
             this.expandButton().start();
         }
         //not close to bottom
-        if (this.state.scrollIndex > 10 || this.state.onClickedSearchBtn){
+        if (this.state.scrollIndex > 12 || this.state.onClickedSearchBtn){
             this.expandButton().stop();
             this.shrinkButton().start();
         }
 
+        // open drawer when click btn
+        if(this.state.onClickedHamburgerBtn){
+            this.props.navigation.openDrawer();
+        }
+        
         return(
             <View style={styles.container}>
                 <StatusBar/>
