@@ -75,8 +75,9 @@ const styles = StyleSheet.create({
         width: '100%'
     },    
     note:{
-        fontSize: 18,
-        color: 'white'
+        fontSize: 20,
+        color: 'white',
+        fontFamily: 'sans-serif'
     },
     noteDate:{
         fontSize: 13,

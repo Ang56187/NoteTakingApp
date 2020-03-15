@@ -47,6 +47,7 @@ function customDrawerContent({progress,...rest}) {
           {...rest}
           contentContainerStyle = {styles.drawerScrollStyle}
         >
+          {/* Text on top of drawer, the first item on top */}
           <Text style={styles.headerTextStyle} >Library</Text>
           {/* Drawer items that filters or sort notes to be shown */}
           <DrawerItem
@@ -97,7 +98,7 @@ function customDrawerContent({progress,...rest}) {
             focused = {false}
             onPress={() => {}}
           />
-          {/* Set line seperation between settings btn and drawe items */}
+          {/* Set line seperation between settings btn and drawer items */}
           <View
             style = {styles.lineStyle} 
           />
@@ -125,8 +126,9 @@ function customDrawerContent({progress,...rest}) {
             />
             <Text style={{
                   color: 'white',
-                  fontSize: 18,
-                  marginLeft:30
+                  fontSize: 20,
+                  marginLeft:30,
+                  fontFamily: 'sans-serif-light'
             }}>Settings</Text>
           </TouchableOpacity>
         </DrawerContentScrollView>
@@ -176,12 +178,14 @@ const styles = StyleSheet.create({
   headerTextStyle: {
     fontSize: 35,
     color: '#ffffff',
-    paddingBottom: 15
+    paddingBottom: 15,
+    fontFamily: 'sans-serif-light'
   },
   labelStyle:
   {
     color: 'white',
-    fontSize: 18
+    fontSize: 20,
+    fontFamily: 'sans-serif-light'
   },
   itemContainerStyle:
   {

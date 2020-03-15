@@ -121,7 +121,7 @@ class MainWrapper extends React.Component{
     //for normal Animated
     expandButton = () =>{
         var ani1 = Animated.timing(this.state.animateBottomPad,
-            {duration: 399,toValue: -0.1});
+            {duration: 399,toValue: 0});
         var ani2 = Animated.timing(this.state.animateX,
             {toValue: 800,duration: 500});
         return Animated.sequence([ani1,ani2]);

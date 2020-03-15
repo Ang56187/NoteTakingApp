@@ -1,13 +1,17 @@
 import React,{Component} from 'react';
-import { Text,View,Animated } from 'react-native';
+import { Text,View,Animated,StyleSheet } from 'react-native';
 import { Button,SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons'
 
 class HeaderBar extends React.Component{
 
     state = {
+        //for search bar
         animateWidth: new Animated.Value(0),
-        animateOpacity: new Animated.Value(0),
+
+        //for button
+        animateViewX: new Animated.Value(0),
+        animateSearchOpacity: new Animated.Value(1)
     };
 
     //method to change styles of button and icon
@@ -15,11 +19,13 @@ class HeaderBar extends React.Component{
         var styleButton;
         if (ifClicked){
             styleButton = {
-                backgroundColor : "#ffffff" 
+                backgroundColor : "#ffffff",
+                borderRadius: 0 
             }
         }
         else{
             styleButton = {
+                borderRadius: 0 
             }
         }
         return styleButton;
@@ -43,17 +49,28 @@ class HeaderBar extends React.Component{
     //method to animate  search bar
     animateSearch = (x) =>{
         if(x){
-            const ani1 = Animated.timing(this.state.animateWidth,{toValue: 240,duration: 500,});
-            const ani2 = Animated.timing(this.state.animateOpacity,{toValue: 1,duration: 300,});
-            return Animated.parallel([ani1,ani2]).start();
+            const ani1 = Animated.timing(this.state.animateWidth,{toValue: 250,duration: 500,});
+            return ani1.start();
         }
         else{
             const ani1 = Animated.timing(this.state.animateWidth,{toValue: 0,duration: 500,});
-            const ani2 = Animated.timing(this.state.animateOpacity,{toValue: 0,duration: 200,});
+            return ani1.start();
+        }
+    }
+
+    animateView = (x) =>{
+        if(x){
+            const ani1 = Animated.timing(this.state.animateViewX,{toValue: -52,duration: 500,});
+            const ani2 = Animated.timing(this.state.animateSearchOpacity,{toValue: 0,duration: 800,});
+            return Animated.parallel([ani2,ani1]).start();
+        }
+        else{
+            const ani1 = Animated.timing(this.state.animateViewX,{toValue: 0,duration: 500,});
+            const ani2 = Animated.timing(this.state.animateSearchOpacity,{toValue: 1,duration: 800,});    
             return Animated.parallel([ani1,ani2]).start();
         }
-
     }
+
 
     render(){
         //set variables for styles to change 
@@ -65,6 +82,7 @@ class HeaderBar extends React.Component{
 
 
         this.animateSearch(this.props.onClickedSearchBtn);
+        this.animateView(this.props.onClickedSearchBtn);
 
         return(
             <View style = {{
@@ -78,6 +96,7 @@ class HeaderBar extends React.Component{
                 opacity: 0.9,
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                maxHeight: 50
             }}>
                 {/* Menu button at left */}
                 <Button 
@@ -96,7 +115,6 @@ class HeaderBar extends React.Component{
                 <Animated.View 
                     style=
                     {{width: this.state.animateWidth,
-                    opacity: this.state.animateOpacity,
                     }}>
                     <SearchBar
                         placeholder="Search notes.."
@@ -109,28 +127,69 @@ class HeaderBar extends React.Component{
                         containerStyle = {{height: 40, justifyContent: 'center',borderRadius: 20}}           
                     />
                 </Animated.View>
+
                 {/* Search button at right */}
-                <Button 
-                    type = "clear" 
-                    onPress={() => {                        
-                        this.props.handleSearchBtnOnClick(); 
-                        this.search.cancel();       
-                        this.search.clear();       
-                    }}
-                    ref={searchBtn => this.searchBtn = searchBtn}
-                    buttonStyle = {_styleSearchBtn}
-                    icon = {
-                    <Icon
-                        name= {"md-search"} 
-                        size = {35} 
-                        style = {_styleSearchIcon}
-                    /> 
-                }
-                />
+                {/* Once clicked, close button will be shown instead(if true) */}
+                <View style={{alignSelf:'flex-end',flexDirection:'column',zIndex:0}}>
+                    {/* Close button (move down once onClickSearchBtn is true)*/}
+                    <Animated.View
+                        style={{
+                            bottom: this.state.animateViewX,
+                        }}
+                    >
+                    <Button 
+                            type = "clear" 
+                            onPress={() => {   
+                                this.props.handleSearchBtnOnClick();                        
+                                this.search.cancel();       
+                                this.search.clear();           
+                            }}
+                            ref={searchBtn => this.searchBtn = searchBtn}
+                            icon = {
+                            <Icon
+                                name= {"md-close-circle-outline"} 
+                                size = {35} 
+                                style = {{color: '#ffffff'}}
+                            /> 
+                        }
+                        /> 
+                    </Animated.View>
+ 
+                    {/* Search button (increase opacity once onClickSearchBtn is false)*/}
+                    <Animated.View
+                        style={{
+                            opacity: this.state.animateSearchOpacity,
+                        }}
+                    >
+                    <Button 
+                            type = "clear" 
+                            onPress={() => {   
+                                this.props.handleSearchBtnOnClick();                        
+                                this.search.cancel();       
+                                this.search.clear();           
+                            }}
+                            ref={searchBtn => this.searchBtn = searchBtn}
+                            icon = {
+                            <Icon
+                                name= {"md-search"} 
+                                size = {35} 
+                                style = {{color: '#ffffff'}}
+                            /> 
+                        }
+                        /> 
+                    </Animated.View>
+                </View>
+                
             </View>
         );            
     }
 }
+
+const styles = StyleSheet.create({
+    iconStyle:{
+        color : "#ffffff"
+    },
+});
 
 
 export default HeaderBar;
