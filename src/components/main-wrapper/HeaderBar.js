@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import { Text,View,Animated,StyleSheet } from 'react-native';
+import { Text,View,Animated,StyleSheet,Easing } from 'react-native';
 import { Button,SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons'
 
@@ -20,15 +20,20 @@ class HeaderBar extends React.Component{
         if (ifClicked){
             styleButton = {
                 backgroundColor : "#ffffff",
-                borderRadius: 0 
             }
         }
         else{
             styleButton = {
-                borderRadius: 0 
             }
         }
-        return styleButton;
+        return StyleSheet.flatten([styleButton,{
+            height:40,
+            width:40,
+            marginLeft: 4,
+            borderRadius:20,
+            justifyContent:'center',
+            overflow:'hidden'
+        }]);
     }
 
     changeIcon(ifClicked){
@@ -46,43 +51,33 @@ class HeaderBar extends React.Component{
         return styleIcon;
     }
 
-    //method to animate  search bar
-    animateSearch = (x) =>{
+    animateSearchBtn = (x) =>{
         if(x){
-            const ani1 = Animated.timing(this.state.animateWidth,{toValue: 250,duration: 500,});
-            return ani1.start();
+            const ani1 = Animated.timing(this.state.animateViewX,{toValue: -52,duration: 400
+                ,easing:Easing.out(Easing.ease)});
+            const ani2 = Animated.timing(this.state.animateSearchOpacity,{toValue: 0,duration: 600
+                ,easing:Easing.out(Easing.ease)});
+            const ani3 = Animated.timing(this.state.animateWidth,{toValue: 250,duration: 400
+                ,easing:Easing.out(Easing.ease)});
+            return Animated.parallel([ani2,ani1,ani3]).start();
         }
         else{
-            const ani1 = Animated.timing(this.state.animateWidth,{toValue: 0,duration: 500,});
-            return ani1.start();
+            const ani1 = Animated.timing(this.state.animateViewX,{toValue: 0,duration: 400
+                ,easing:Easing.out(Easing.ease)});
+            const ani2 = Animated.timing(this.state.animateSearchOpacity,{toValue: 1,duration: 500
+                ,easing:Easing.out(Easing.ease)});  
+            const ani3 = Animated.timing(this.state.animateWidth,{toValue: 0,duration: 400
+                ,easing:Easing.out(Easing.ease)}); 
+            return Animated.parallel([ani1,ani2,ani3]).start();
         }
     }
-
-    animateView = (x) =>{
-        if(x){
-            const ani1 = Animated.timing(this.state.animateViewX,{toValue: -52,duration: 500,});
-            const ani2 = Animated.timing(this.state.animateSearchOpacity,{toValue: 0,duration: 800,});
-            return Animated.parallel([ani2,ani1]).start();
-        }
-        else{
-            const ani1 = Animated.timing(this.state.animateViewX,{toValue: 0,duration: 500,});
-            const ani2 = Animated.timing(this.state.animateSearchOpacity,{toValue: 1,duration: 800,});    
-            return Animated.parallel([ani1,ani2]).start();
-        }
-    }
-
 
     render(){
         //set variables for styles to change 
         var _styleHamburgerBtn = this.changeButton(this.props.onClickedHamburgerBtn);
         var _styleHamburgerIcon = this.changeIcon(this.props.onClickedHamburgerBtn);
 
-        var _styleSearchBtn = this.changeButton(this.props.onClickedSearchBtn);
-        var _styleSearchIcon = this.changeIcon(this.props.onClickedSearchBtn);
-
-
-        this.animateSearch(this.props.onClickedSearchBtn);
-        this.animateView(this.props.onClickedSearchBtn);
+        this.animateSearchBtn(this.props.onClickedSearchBtn);
 
         return(
             <View style = {{
@@ -96,13 +91,14 @@ class HeaderBar extends React.Component{
                 opacity: 0.9,
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                maxHeight: 50
+                maxHeight: 50,
+                overflow: 'hidden'
             }}>
                 {/* Menu button at left */}
                 <Button 
                     type = "clear" 
                     onPress={() => this.props.handleHamburgerBtnOnClick()}
-                    buttonStyle = {_styleHamburgerBtn}
+                    containerStyle = {_styleHamburgerBtn}
                     icon = {
                     <Icon
                         name= {"md-menu"} 
@@ -159,14 +155,13 @@ class HeaderBar extends React.Component{
                     <Animated.View
                         style={{
                             opacity: this.state.animateSearchOpacity,
+                            transform: [{scale: this.state.animateSearchOpacity}]
                         }}
                     >
                     <Button 
                             type = "clear" 
                             onPress={() => {   
-                                this.props.handleSearchBtnOnClick();                        
-                                this.search.cancel();       
-                                this.search.clear();           
+                                this.props.handleSearchBtnOnClick();                                   
                             }}
                             ref={searchBtn => this.searchBtn = searchBtn}
                             icon = {

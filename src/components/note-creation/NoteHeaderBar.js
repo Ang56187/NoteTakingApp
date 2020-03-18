@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         //TODO
         //later change color here to use prop color from parent
-        backgroundColor: '#21B2F2',
+        backgroundColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'space-between',
     },

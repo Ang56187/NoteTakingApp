@@ -1,7 +1,8 @@
 import React,{Component} from 'react';
-import { StyleSheet,View,Dimensions,Animated } from 'react-native';
+import { StyleSheet,View,Dimensions,Animated,Easing } from 'react-native';
 import {Button} from 'react-native-elements';
-import Icon from 'react-native-vector-icons/Ionicons'
+import Icon from 'react-native-vector-icons/Ionicons';
+import CirclePicker from '../color-select/CirclePicker'
 
 const deviceWidth = Math.round(Dimensions.get('window').width);
 
@@ -10,56 +11,77 @@ export default class NoteBottomBar extends React.Component{
         super(props);
         this.state = {
             viewHeight: new Animated.Value(51),
-            viewOpacity: new Animated.Value(0.5),
-            isViewOpen: false
+            viewOpacity: new Animated.Value(0),
+            viewX: new Animated.Value(0),
+            isColorViewOpen: false
         }
     }
 
     expandView(){
         var ani1 = Animated.timing(this.state.viewHeight,
-            {duration: 300,toValue: 140});
+            {duration: 800,toValue: 140});
         var ani2 = Animated.timing(this.state.viewOpacity,
-            {duration: 400,toValue:1});
-        return Animated.parallel([ani1,ani2]);
+            {duration: 600,toValue:1});
+        var ani3 = Animated.timing(this.state.viewX,
+            {duration: 900,toValue:50});
+        return Animated.parallel([ani1,ani2,ani3]);
     }
 
     
     shrinkView(){
         var ani1 = Animated.timing(this.state.viewHeight,
-            {duration: 300,toValue: 51});
+            {duration: 800,toValue: 51});
         var ani2 = Animated.timing(this.state.viewOpacity,
-            {duration: 400,toValue:0.5});
-        return Animated.parallel([ani1,ani2]);
+            {duration: 600,toValue:0});
+        var ani3 = Animated.timing(this.state.viewX,
+            {duration: 900,toValue:-50});
+        return Animated.parallel([ani1,ani2,ani3]);
     }
 
     handleIsViewOpen(){
-        this.setState({isViewOpen: !this.state.isViewOpen});
+        this.setState({isColorViewOpen: !this.state.isColorViewOpen});
     }
 
     render(){
+
+        if(this.state.isColorViewOpen){
+            this.expandView().start();
+        }
+        else{
+            this.shrinkView().start();
+        }
+
         return(
-            <View style={styles.container}>
+            <Animated.View 
+                style={StyleSheet.flatten([
+                    styles.container,
+                    {
+                        backgroundColor: this.props.backColor,
+                        overflow: 'hidden',
+                        height: this.state.viewHeight,
+                        borderTopWidth: 0.5,
+                        borderColor: 'white',
+                    }])}
+            >
+                
                 <Animated.View style={StyleSheet.flatten([
                     styles.container,
                     {
-                        height: this.state.viewHeight,
-                        borderTopWidth: 1,
-                        borderColor: 'white',
-                        opacity: this.state.viewOpacity}])}>
-
+                        bottom: this.state.viewX,
+                        opacity: this.state.viewOpacity,
+                        flexDirection: 'column'
+                    }])}>
+                    <CirclePicker 
+                    width={deviceWidth} 
+                    handleBackColor={this.props.handleBackColor}
+                    isColorViewOpen = {this.state.isColorViewOpen}/>
                 </Animated.View>
+                
                 <View style = {styles.container}>
-                    {/* Go back to main page */}
+                    {/*Add new types of notes*/}
                     <Button
                         type = "clear" 
                         onPress={() =>{
-                            this.handleIsViewOpen();
-                            if(this.state.isViewOpen){
-                                this.expandView().start();
-                            }
-                            else{
-                                this.shrinkView().start();
-                            }
                         }}
                         icon = {
                         <Icon
@@ -69,10 +91,11 @@ export default class NoteBottomBar extends React.Component{
                         />  
                         }
                     />
-                    {/* Save the note created */}
+                    {/* Change settings of note(color,font etc)*/}
                     <Button
                         type = "clear" 
-                        onPress={() =>{}}
+                        onPress={() =>{this.handleIsViewOpen();}}
+                        containerStyle ={{width: 35}}
                         icon = {
                         <Icon
                             name= {"md-more"} 
@@ -82,7 +105,7 @@ export default class NoteBottomBar extends React.Component{
                         }
                     />
                 </View>
-            </View>
+            </Animated.View>
         );
     }
 }
@@ -93,13 +116,8 @@ const styles = StyleSheet.create({
         // set to most bottom
         position: 'absolute',
         bottom: 0,
-        zIndex:2,
         width: '100%',
-        height: 50,
         flexDirection: 'row',
-        //TODO
-        //later change color here to use prop color from parent
-        backgroundColor: '#21B2F2',
         alignItems: 'center',
         justifyContent: 'space-between',
     },

@@ -7,7 +7,7 @@ import NoteCreationPage from './src/scenes/NoteCreationPage'
 
 export default function App() {
   return (
-    <DrawerNavigator/>
-    // <NoteCreationPage/>
+    // <DrawerNavigator/>
+    <NoteCreationPage/>
   );
 }

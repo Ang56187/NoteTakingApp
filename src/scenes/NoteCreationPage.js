@@ -17,9 +17,13 @@ export default class NoteCreationPage extends React.Component{
             titleTextInputHeight: 50,
             showTitleError: false,
             textInput: '',
-            textInputHeight: 50
+            textInputHeight: 50,
+
+            //for color background setting
+            backColor: '#21B2F2'
         }
 
+        this.handleBackColor = this.handleBackColor.bind(this);
     }
 
     // limit text input size if text exceed the intended size
@@ -37,13 +41,22 @@ export default class NoteCreationPage extends React.Component{
         });
     }
 
+    handleBackColor(color){
+        this.setState({backColor: color});
+    }
+
     render(){
         
-        let timeOut;
-
         return(
             <View style={styles.container}>
-                <View style = {styles.coloredView}>
+                <View style = {{
+                            backgroundColor: this.state.backColor,
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                }}>
                     {/* The header with 2 buttons and text in middle */}
                     <NoteHeaderBar/>
                     <ScrollView contentContainerStyle={styles.scrollStyle}>
@@ -67,8 +80,7 @@ export default class NoteCreationPage extends React.Component{
                             onKeyPress = {e=>{
                                 if(this.state.titleTextInput.length == 100){
                                     this.setState({showTitleError: true});                                   
-                                    timeOut = setTimeout(()=>{this.setState({showTitleError: false});},2500);
-                                    timeOut
+                                    setTimeout(()=>{this.setState({showTitleError: false});},2500);
                             }}}
                             onContentSizeChange = {e => {this.handleTitleTextInputHeight(e)}}
                             value = {this.state.titleTextInput}
@@ -94,7 +106,8 @@ export default class NoteCreationPage extends React.Component{
                         />
                         <Button containerStyle={{height:200,backgroundColor: 'blue'}}/>
                     </ScrollView>
-                    <NoteBottomBar/>
+                    {/* bottom bar that allows for options for that note */}
+                    <NoteBottomBar handleBackColor={this.handleBackColor} backColor={this.state.backColor}/>
                 </View>
             </View>
         );
@@ -107,15 +120,6 @@ const styles = StyleSheet.create({
       flex: 1,
       zIndex: 0,
       marginTop: Constants.statusBarHeight,
-      backgroundColor: '#ffffff',
-    },
-    coloredView:{
-        backgroundColor: backgroundColor,
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
     },
     scrollStyle:{
         paddingBottom: 60,
@@ -126,7 +130,7 @@ const styles = StyleSheet.create({
         //style of box itself
         width: (deviceWidth-20),
         borderColor: 'white',
-        borderWidth: 1,
+        borderWidth: 0.5,
         marginTop: 10,
         marginBottom:10,
         //style of text inserted
