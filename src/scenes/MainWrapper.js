@@ -6,6 +6,7 @@ import HeaderBar from '../components/main-wrapper/HeaderBar';
 import ScrollViewNotes from '../components/main-wrapper/ScrollViewNotes';
 import Constants from 'expo-constants';
 import NoteList from '../objects/NotesList';
+import Note from '../objects/Note';
 import { createDrawerNavigator,useIsDrawerOpen } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
 // import Animated, { Easing } from 'react-native-reanimated';

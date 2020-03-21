@@ -32,6 +32,5 @@ export default class NoteList{
     get noteList(){
         return this._noteList;
     }
-
     
 }

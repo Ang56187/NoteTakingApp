@@ -43,8 +43,6 @@ const styles = StyleSheet.create({
     container:{
         width: '100%',
         flexDirection: 'row',
-        //TODO
-        //later change color here to use prop color from parent
         backgroundColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'space-between',

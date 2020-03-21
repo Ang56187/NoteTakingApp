@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import { StyleSheet,View,Dimensions,Animated,Easing } from 'react-native';
+import { StyleSheet,View,Dimensions,Animated,UIManager } from 'react-native';
 import {Button} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import CirclePicker from '../color-select/CirclePicker'
@@ -15,15 +15,19 @@ export default class NoteBottomBar extends React.Component{
             viewX: new Animated.Value(0),
             isColorViewOpen: false
         }
+
+        if (Platform.OS === 'android') {
+            UIManager.setLayoutAnimationEnabledExperimental(true);
+        }
     }
 
     expandView(){
         var ani1 = Animated.timing(this.state.viewHeight,
-            {duration: 800,toValue: 140});
+            {duration: 800,toValue: 170});
         var ani2 = Animated.timing(this.state.viewOpacity,
             {duration: 600,toValue:1});
         var ani3 = Animated.timing(this.state.viewX,
-            {duration: 900,toValue:50});
+            {duration: 700,toValue:50});
         return Animated.parallel([ani1,ani2,ani3]);
     }
 
@@ -34,7 +38,7 @@ export default class NoteBottomBar extends React.Component{
         var ani2 = Animated.timing(this.state.viewOpacity,
             {duration: 600,toValue:0});
         var ani3 = Animated.timing(this.state.viewX,
-            {duration: 900,toValue:-50});
+            {duration: 700,toValue:-110});
         return Animated.parallel([ani1,ani2,ani3]);
     }
 
@@ -63,7 +67,6 @@ export default class NoteBottomBar extends React.Component{
                         borderColor: 'white',
                     }])}
             >
-                
                 <Animated.View style={StyleSheet.flatten([
                     styles.container,
                     {
@@ -72,9 +75,14 @@ export default class NoteBottomBar extends React.Component{
                         flexDirection: 'column'
                     }])}>
                     <CirclePicker 
-                    width={deviceWidth} 
-                    handleBackColor={this.props.handleBackColor}
-                    isColorViewOpen = {this.state.isColorViewOpen}/>
+                        //sending props to child(prop drilling is bad lets not do it again)
+                        width={deviceWidth} 
+                        backColor={this.props.backColor}
+                        textColor={this.props.textColor}
+                        handleBackColor={this.props.handleBackColor}
+                        handleTextColor={this.props.handleTextColor}
+                        isColorViewOpen = {this.state.isColorViewOpen}
+                    />
                 </Animated.View>
                 
                 <View style = {styles.container}>
@@ -94,7 +102,8 @@ export default class NoteBottomBar extends React.Component{
                     {/* Change settings of note(color,font etc)*/}
                     <Button
                         type = "clear" 
-                        onPress={() =>{this.handleIsViewOpen();}}
+                        onPress={() =>{this.handleIsViewOpen();
+                        }}
                         containerStyle ={{width: 35}}
                         icon = {
                         <Icon

@@ -53,16 +53,16 @@ class HeaderBar extends React.Component{
 
     animateSearchBtn = (x) =>{
         if(x){
-            const ani1 = Animated.timing(this.state.animateViewX,{toValue: -52,duration: 400
+            const ani1 = Animated.timing(this.state.animateViewX,{toValue: -52,duration: 500
                 ,easing:Easing.out(Easing.ease)});
             const ani2 = Animated.timing(this.state.animateSearchOpacity,{toValue: 0,duration: 600
                 ,easing:Easing.out(Easing.ease)});
-            const ani3 = Animated.timing(this.state.animateWidth,{toValue: 250,duration: 400
+            const ani3 = Animated.timing(this.state.animateWidth,{toValue: 300,duration: 400
                 ,easing:Easing.out(Easing.ease)});
             return Animated.parallel([ani2,ani1,ani3]).start();
         }
         else{
-            const ani1 = Animated.timing(this.state.animateViewX,{toValue: 0,duration: 400
+            const ani1 = Animated.timing(this.state.animateViewX,{toValue: 0,duration: 500
                 ,easing:Easing.out(Easing.ease)});
             const ani2 = Animated.timing(this.state.animateSearchOpacity,{toValue: 1,duration: 500
                 ,easing:Easing.out(Easing.ease)});  
