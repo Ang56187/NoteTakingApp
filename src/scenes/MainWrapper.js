@@ -1,5 +1,5 @@
 import React,{Component,useState} from 'react';
-import { StyleSheet,View,Text,StatusBar,Animated } from 'react-native';
+import { StyleSheet,View,Text,StatusBar,Animated, TouchableNativeFeedbackBase } from 'react-native';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import HeaderBar from '../components/main-wrapper/HeaderBar';
@@ -9,7 +9,6 @@ import NoteList from '../objects/NotesList';
 import Note from '../objects/Note';
 import { createDrawerNavigator,useIsDrawerOpen } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
-// import Animated, { Easing } from 'react-native-reanimated';
 
 //variables
 var filteredNotes = [];
@@ -17,7 +16,6 @@ var filteredNotes = [];
 //wrapped around class component so it can actually receive hooks
 //(due to only restricted to functions)
 const MainWrapperHook = (props) => {  
-
     return <MainWrapper
         navigation={props.navigation}/>
 }
@@ -44,17 +42,16 @@ class MainWrapper extends React.Component{
             animateBottomPad: new Animated.Value(10),
 
             //for interporation purposes (animate the add button)
-            scrollSize : 0,
+            scrollIndex : 0,
             scaleX: new Animated.Value(20)
         }
         //new prop
         //bind creates new func to perform same as  both method handleButtonOnClick
         this.handleHamburgerBtnOnClick = this.handleHamburgerBtnOnClick.bind(this);
         this.handleSearchBtnOnClick = this.handleSearchBtnOnClick.bind(this);
-        this.handleOnEndScroll = this.handleOnEndScroll.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
-        this.handleScrollSize = this.handleScrollSize.bind(this);
-        this.handleScrollIndex = this.handleScrollIndex.bind(this);
+        this.expandButton = this.expandButton.bind(this);
+        this.shrinkButton = this.shrinkButton.bind(this);
 
         //handle drawer toggle, changes state of hamburger btn
         const openDrawer = this.props.navigation.addListener('drawerOpen',e=>{
@@ -63,16 +60,6 @@ class MainWrapper extends React.Component{
         const closeDrawer = this.props.navigation.addListener('drawerClose',e=>{
             this.setState({onClickedHamburgerBtn: false});
         });
-    
-    }
-
-    //retrieve scroll values from scroll component (ScrollViewNotes)
-    handleScrollSize(x){
-        this.setState({scrollSize:x})
-    }
-
-    handleScrollIndex(x){
-        this.setState({scrollIndex: x})
     }
 
     //set method for buttons click
@@ -112,43 +99,25 @@ class MainWrapper extends React.Component{
         });
     }
 
-    //set method upon reaching end of scroll
-    handleOnEndScroll(x){
-        this.setState({
-            onEndScroll: x
-        });
-    }
-
     //for normal Animated
     expandButton = () =>{
         var ani1 = Animated.timing(this.state.animateBottomPad,
-            {duration: 399,toValue: 0});
+            {duration: 300,toValue: 0});
         var ani2 = Animated.timing(this.state.animateX,
-            {toValue: 800,duration: 500});
+            {toValue: 800,duration: 400});
         return Animated.sequence([ani1,ani2]);
     }
 
     shrinkButton = () =>{
         var ani1 = Animated.timing(this.state.animateBottomPad,
-            {duration: 300,toValue: 10});
+            {duration: 250,toValue: 10});
         var ani2 = Animated.timing(this.state.animateX,
-            {toValue: 50,duration: 600});
+            {toValue: 50,duration: 400});
         return Animated.sequence([ani2,ani1]);
     }
 
     //where actual components were rendered
     render(){
-        //scrollIndex(0 is bottom, {whatever} is the top, depends on scroll size)
-        //close to bottom
-        if (this.state.scrollIndex <= 10 && !this.state.onClickedSearchBtn){
-            this.shrinkButton().stop();
-            this.expandButton().start();
-        }
-        //not close to bottom
-        if (this.state.scrollIndex > 12 || this.state.onClickedSearchBtn){
-            this.expandButton().stop();
-            this.shrinkButton().start();
-        }
 
         // open drawer when click btn
         if(this.state.onClickedHamburgerBtn){
@@ -170,9 +139,9 @@ class MainWrapper extends React.Component{
                 {/* custom scroll view with 2 columns (from ScrollViewNotes.js) */}
                 <ScrollViewNotes
                     noteTitles = {this.state.noteTitles}
-                    handleOnEndScroll = {this.handleOnEndScroll} 
-                    handleScrollSize = {this.handleScrollSize}   
-                    handleScrollIndex = {this.handleScrollIndex}
+                    expandButton = {this.expandButton}
+                    shrinkButton = {this.shrinkButton}
+                    onClickedSearchBtn ={this.state.onClickedSearchBtn}
                 />
                 {/* button to add new note */}
                 <Animated.View 

@@ -1,6 +1,7 @@
 import React,{Component} from 'react';
 import Constants from 'expo-constants';
-import { StyleSheet,View,TextInput,Dimensions,ScrollView,Text,KeyboardAvoidingView, Animated , UIManager} from 'react-native';
+import { StyleSheet,View,TextInput,Dimensions,ScrollView,Text,
+    KeyboardAvoidingView, Animated , UIManager, LayoutAnimation} from 'react-native';
 import color from 'color';
 import NoteHeaderBar from '../components/note-creation/NoteHeaderBar';
 import NoteBottomBar from '../components/note-creation/NoteBottomBar';
@@ -22,9 +23,19 @@ export default class NoteCreationPage extends React.Component{
 
             //for color background setting
             backColor: '#21B2F2',
+            lighterBackColor : new color('#21B2F2').lighten(0.1),
+            lighterBorderColor: new color('#21B2F2').lighten(0.6),
             //for text color setting
             textColor: '#ffffff',
+
+            //for storing checkboxes/options/notifications/normal text..
+            componentArr: [],
+            disabled: false
         }
+
+        this.addNewEle = false;
+        //starts index of components at 0
+        this.index = 0;
 
         if (Platform.OS === 'android') {
             UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -32,15 +43,65 @@ export default class NoteCreationPage extends React.Component{
         
         this.handleBackColor = this.handleBackColor.bind(this);
         this.handleTextColor = this.handleTextColor.bind(this);
-
+        this.addComponent = this.addComponent.bind(this);
+        this.removeComponent = this.removeComponent.bind(this);
+        this.handleUpdateNoteText = this.handleUpdateNoteText.bind(this);
+        this.afterAnimationComplete = this.afterAnimationComplete.bind(this);
     }
+
+    //for adding/removing components
+
+    //callback after animation to add component is done
+    afterAnimationComplete = () =>{
+        //add arr index by 1
+        this.index+=1;
+        //button not disabled anymore
+        this.setState({disabled: false});
+    }
+
+    addComponent = (eleType) =>{
+            this.addNewEle = true
+
+            //TODO
+            //figure out how to save text too
+            //newValue.type and text to be saved in note obj later as content
+            const newValue = {id: this.index,type: eleType,text: 'df'}
+
+            this.setState({
+                //disable button so it wont create new component,
+                //during progress of creating a new one
+                //to avoid conflicting ids
+                disabled: true,
+                //add new one on top of pre-existing ones
+                componentArr: [...this.state.componentArr,newValue]
+            })
+    }
+
+    removeComponent = (id)=>{
+        this.addNewEle = false;
+        //remove the selected component through the id
+        const newArray = [...this.state.componentArr];
+        newArray.splice(newArray.findIndex(ele=>ele.id===id),1);
+
+        //replace current array with new array
+        this.setState(()=>{
+            return{
+                componentArr: newArray
+            }
+        },()=>{
+            //animate that closing gap once middle component deleted
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        })    
+    }
+
+
 
     // limit text input size if text exceed the intended size
     handleTitleTextInputHeight(e){
         const height = e.nativeEvent.contentSize.height;
         if(height < 100){
             return Animated.timing(this.state.titleTextInputHeight,
-                {duration: 200,toValue: height+10}).start()
+                {duration: 200,toValue: height+10}).start();
         }
     }
 
@@ -48,12 +109,23 @@ export default class NoteCreationPage extends React.Component{
         const height = e.nativeEvent.contentSize.height;
         if(height < 300){
             return Animated.timing(this.state.textInputHeight,
-                {duration: 200,toValue: height+10}).start()
+                {duration: 200,toValue: height+10}).start(
+                    ()=>{
+                        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                    }
+                );
         }
     }
 
-    handleBackColor(color){
-        this.setState({backColor: color});
+    //change color of the notes(background/text)
+    handleBackColor(passedColor){
+        //set as background color of textinput as lighter version of background color
+        const lighterBackColor = passedColor == '#000000' ? '#404040'
+                : new color(passedColor).lighten(0.1);
+        const lighterBorderColor = passedColor == '#000000' ? 'white'
+                : new color(passedColor).lighten(0.6);
+        this.setState({backColor: passedColor,lighterBackColor: lighterBackColor,
+            lighterBorderColor: lighterBorderColor});
     }
 
     handleTextColor(color){
@@ -61,9 +133,22 @@ export default class NoteCreationPage extends React.Component{
     }
 
 
+    //updates the note message in the componentArr array objects
+    //by updating its text property
+    handleUpdateNoteText(id,text){
+        //make shallow copy of item
+        let components = [...this.state.componentArr]
+        let component = {...components[id]};
+
+        //set text
+        component.text = text;
+        //insert updated component back to array copy
+        components[id] = component;
+        //overwrite real array
+        this.setState({componentArr: components});
+    }
+
     render(){
-        //set as background color of textinput as lighter version of background color
-        this.lighterBackColor = color(this.state.backColor).lighten(0.1);
 
         return(
             <View style={styles.container}>
@@ -87,6 +172,7 @@ export default class NoteCreationPage extends React.Component{
                         <ScrollView 
                             contentContainerStyle={styles.scrollStyle}
                             ref={(el)=>{this.scrollbar = el;}}
+
                         >
                             {/* label to show text "title" */}
                             <Text style={styles.textLabelStyle}>Title</Text>
@@ -99,7 +185,9 @@ export default class NoteCreationPage extends React.Component{
                                     autoCorrect= {false}
                                     style={StyleSheet.flatten([styles.textInputStyle,{
                                         color: this.state.textColor,
-                                        backgroundColor: this.lighterBackColor
+                                        backgroundColor: this.state.lighterBackColor,
+                                        borderColor: this.state.lighterBorderColor,
+
                                     }])}
                                     onChangeText={text=> {
                                         this.setState({ titleTextInput: text });
@@ -133,7 +221,8 @@ export default class NoteCreationPage extends React.Component{
                                     ref={(el)=>{this.firstNoteInput = el;}}
                                     style={StyleSheet.flatten([styles.textInputStyle,{
                                         color: this.state.textColor,
-                                        backgroundColor: this.lighterBackColor
+                                        backgroundColor: this.state.lighterBackColor,
+                                        borderColor: this.state.lighterBorderColor,
                                     }])}
                                     autoCorrect= {false}
                                     onChangeText={text=> {
@@ -146,11 +235,24 @@ export default class NoteCreationPage extends React.Component{
                                 />
                             </Animated.View>
 
-                            <CheckBoxTextInput 
-                                width={deviceWidth} 
-                                lighterBackColor={this.lighterBackColor}
-                                textColor={this.state.textColor}
-                            />
+                            {this.state.componentArr.map(ele=>{
+                                if(ele.type === 'checkbox'){
+                                    return (
+                                        <CheckBoxTextInput
+                                            key= {ele.id}
+                                            ele = {ele}
+                                            afterAnimationComplete = {this.afterAnimationComplete}
+                                            handleUpdateNoteText = {this.handleUpdateNoteText}
+                                            removeComponent = {this.removeComponent}
+                                            width={deviceWidth} 
+                                            lighterBackColor={this.state.lighterBackColor}
+                                            lighterBorderColor ={this.state.lighterBorderColor}
+                                            textColor={this.state.textColor}
+                                        />
+                                    )
+                                }
+                            })}
+
 
                         </ScrollView>
                     </KeyboardAvoidingView>
@@ -162,6 +264,9 @@ export default class NoteCreationPage extends React.Component{
                         handleTextColor={this.handleTextColor}
                         backColor={this.state.backColor}
                         textColor={this.state.textColor}
+                        addComponent = {this.addComponent}
+                        //disable button when in progress of adding component
+                        disabled = {this.state.disabled}
                     />
                 </View>
             </View>
@@ -184,7 +289,6 @@ const styles = StyleSheet.create({
     textInputStyle:{
         //style of box itself
         width: (deviceWidth-20),
-        borderColor: 'white',
         borderRadius: 5,
         borderBottomWidth: 1,
         marginTop: 5,
@@ -192,10 +296,10 @@ const styles = StyleSheet.create({
         //style of text inserted
         fontSize: 17,
         fontFamily: 'sans-serif',
-        padding: 10
+        padding: 5
     },
     textLabelStyle:{
-        fontSize: 23,
+        fontSize: 20,
         color: 'white',
         fontFamily: 'sans-serif-light',
         alignSelf: 'flex-start',

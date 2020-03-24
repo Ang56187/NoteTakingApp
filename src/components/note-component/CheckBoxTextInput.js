@@ -14,6 +14,41 @@ export default class CheckBoxTextInput extends React.Component{
             textInputHeight: new Animated.Value(50)
         }
 
+        this.animateXAsMount = new Animated.Value(0);
+
+    }
+
+    //check if component should update
+    shouldComponentUpdate(nextProps, nextState) {
+        if (nextProps.ele.id !== this.props.ele.id || 
+            nextProps.isChecked!== this.state.isChecked
+            ) {
+          return true;
+        }
+        return false;
+      }
+
+    //when component rendered
+    componentDidMount(){
+        Animated.timing(
+            this.animateXAsMount,
+            {
+                toValue:0.5,
+                duration:250,
+                useNativeDriver: true
+            }
+        ).start(()=>{this.props.afterAnimationComplete()});
+    }
+
+    removeItem =()=>{
+        Animated.timing(
+            this.animateXAsMount,
+            {
+                toValue:1,
+                duration:250,
+                useNativeDriver: true
+            }
+        ).start(()=>{this.props.removeComponent(this.props.ele.id)});
     }
 
     handleTextInputHeight(e){
@@ -25,9 +60,16 @@ export default class CheckBoxTextInput extends React.Component{
     }
 
     render(){
+
+        const translateAnimate= this.animateXAsMount.interpolate({
+            inputRange: [0,1],
+            outputRange: [-this.props.width,this.props.width]
+        });
+
         return(
-            <View
+            <Animated.View
                 style={{
+                    transform: [{translateX: translateAnimate}],
                     width: '100%',
                     flexDirection: 'row',
                     alignItems: 'flex-start',
@@ -37,10 +79,10 @@ export default class CheckBoxTextInput extends React.Component{
                 }}
             >
                 <CheckBox
-                    size={32}
+                    size={29}
                     checked= {this.state.isChecked}
                     onPress = {()=>{this.setState({isChecked : ! this.state.isChecked})}}
-                    containerStyle = {{padding: 0,top: 8}}
+                    containerStyle = {{padding: 0,top: 5}}
                     iconType = 'ionicon'
                     checkedIcon = 'md-checkbox'
                     uncheckedIcon = 'md-square-outline'
@@ -53,32 +95,36 @@ export default class CheckBoxTextInput extends React.Component{
                         multiline
                         style={StyleSheet.flatten([styles.textInputStyle,{
                             width: (this.props.width-70-20),
-                            minHeight: 50,
                             color: this.props.textColor,
                             backgroundColor: this.props.lighterBackColor,
-                            paddingHorizontal: 5,
-                            left: -5
+                            left: -5,
+                            padding: 5,
+                            borderColor: this.props.lighterBorderColor,
                         }])}
                         autoCorrect= {false}
                         onContentSizeChange={e=>{this.handleTextInputHeight(e)}}
                         onChangeText={text=> {
                             this.setState({textInput: text});
+                            this.props.handleUpdateNoteText(this.props.ele.id,text);
                         }}
                         value = {this.state.textInput}
                     />
                 </Animated.View>
 
 
-                <TouchableOpacity style={{paddingHorizontal: 10,top: 10}}>                 
+                <TouchableOpacity 
+                    style={{paddingHorizontal: 10,top: 10}}
+                    onPress={this.removeItem}
+                >                 
                     <Icon
                         type='ionicon'
                         name= {"md-close"} 
-                        size = {35} 
+                        size = {29} 
                         color = {'#ffffff'}
                     />
                 </TouchableOpacity>
  
-            </View>
+            </Animated.View>
         );
     }
 }
@@ -86,7 +132,6 @@ export default class CheckBoxTextInput extends React.Component{
 const styles = StyleSheet.create({
     textInputStyle:{
         //style of box itself
-        borderColor: 'white',
         borderRadius: 5,
         borderBottomWidth: 1,
         marginTop: 5,

@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import { StyleSheet,View,Dimensions,Animated,UIManager } from 'react-native';
+import { StyleSheet,View,Dimensions,Animated,UIManager,LayoutAnimation } from 'react-native';
 import {Button} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import CirclePicker from '../color-select/CirclePicker'
@@ -88,9 +88,14 @@ export default class NoteBottomBar extends React.Component{
                 <View style = {styles.container}>
                     {/*Add new types of notes*/}
                     <Button
-                        type = "clear" 
+                        type = "clear"
+                        //TODO
+                        //later migrate these two to other buttons in slide up 
+                        disabled = {this.props.disabled}
                         onPress={() =>{
+                            this.props.addComponent("checkbox");
                         }}
+                        //
                         icon = {
                         <Icon
                             name= {"md-add"} 
