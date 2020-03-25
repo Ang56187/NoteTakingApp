@@ -6,7 +6,7 @@ import color from 'color';
 import NoteHeaderBar from '../components/note-creation/NoteHeaderBar';
 import NoteBottomBar from '../components/note-creation/NoteBottomBar';
 import CheckBoxTextInput from '../components/note-component/CheckBoxTextInput'
-
+import PointerTextInput from '../components/note-component/PointerTextInput'
 
 const backgroundColor = '#21B2F2';
 const deviceWidth = Math.round(Dimensions.get('window').width);
@@ -65,7 +65,7 @@ export default class NoteCreationPage extends React.Component{
             //TODO
             //figure out how to save text too
             //newValue.type and text to be saved in note obj later as content
-            const newValue = {id: this.index,type: eleType,text: 'df'}
+            const newValue = {id: this.index,type: eleType,text: ''}
 
             this.setState({
                 //disable button so it wont create new component,
@@ -84,13 +84,13 @@ export default class NoteCreationPage extends React.Component{
         newArray.splice(newArray.findIndex(ele=>ele.id===id),1);
 
         //replace current array with new array
-        this.setState(()=>{
-            return{
-                componentArr: newArray
-            }
+        this.setState({
+                componentArr: newArray,
         },()=>{
             //animate that closing gap once middle component deleted
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+            console.log('\n')
+            // this.state.componentArr.forEach(e=>{console.log(e)})
         })    
     }
 
@@ -117,6 +117,25 @@ export default class NoteCreationPage extends React.Component{
         }
     }
 
+    //updates the note message in the componentArr array objects
+    //by updating its text property
+    //TODO
+    //error here on generating duplicate of added ele without id and 
+    handleUpdateNoteText(id,text){
+        // //make shallow copy of item
+        let components = [...this.state.componentArr]
+
+        //set text on identical ids
+        components.forEach(e=>{
+                if(e.id === id){
+                    e.text = text;
+                }
+            })
+
+        //overwrite real array
+        this.setState({componentArr: components});
+    }
+
     //change color of the notes(background/text)
     handleBackColor(passedColor){
         //set as background color of textinput as lighter version of background color
@@ -130,22 +149,6 @@ export default class NoteCreationPage extends React.Component{
 
     handleTextColor(color){
         this.setState({textColor: color});
-    }
-
-
-    //updates the note message in the componentArr array objects
-    //by updating its text property
-    handleUpdateNoteText(id,text){
-        //make shallow copy of item
-        let components = [...this.state.componentArr]
-        let component = {...components[id]};
-
-        //set text
-        component.text = text;
-        //insert updated component back to array copy
-        components[id] = component;
-        //overwrite real array
-        this.setState({componentArr: components});
     }
 
     render(){
@@ -213,7 +216,7 @@ export default class NoteCreationPage extends React.Component{
                             </Text> : null}
                             
                             {/* label to show text "Notes list" */}
-                            <Text style={styles.textLabelStyle}>Note</Text>
+                            <Text style={styles.textLabelStyle}>Notes</Text>
                             {/* Text input for notes content(first part anyways) */}
                             <Animated.View style={{height: this.state.textInputHeight}}>
                                 <TextInput
@@ -248,6 +251,23 @@ export default class NoteCreationPage extends React.Component{
                                             lighterBackColor={this.state.lighterBackColor}
                                             lighterBorderColor ={this.state.lighterBorderColor}
                                             textColor={this.state.textColor}
+                                            editable = {true}
+                                        />
+                                    )
+                                }
+                                if(ele.type === 'pointer'){
+                                    return (
+                                        <PointerTextInput
+                                            key= {ele.id}
+                                            ele = {ele}
+                                            afterAnimationComplete = {this.afterAnimationComplete}
+                                            handleUpdateNoteText = {this.handleUpdateNoteText}
+                                            removeComponent = {this.removeComponent}
+                                            width={deviceWidth} 
+                                            lighterBackColor={this.state.lighterBackColor}
+                                            lighterBorderColor ={this.state.lighterBorderColor}
+                                            textColor={this.state.textColor}
+                                            editable={true}
                                         />
                                     )
                                 }

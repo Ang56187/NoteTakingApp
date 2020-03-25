@@ -4,15 +4,12 @@ import {CheckBox,Button,Icon} from 'react-native-elements';
 import { ThemeProvider } from '@react-navigation/native';
 
 
-//TODO 
-// after done note creation, implement editable prop to disable edits on normal notes
 
-export default class CheckBoxTextInput extends React.Component{
+export default class PointerTextInput extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            isChecked: false,
-            textInput: '',
+            textInput: this.props.ele.text,
             textInputHeight: new Animated.Value(50)
         }
 
@@ -23,7 +20,7 @@ export default class CheckBoxTextInput extends React.Component{
     //check if component should update
     shouldComponentUpdate(nextProps, nextState) {
         if (nextProps.ele.id !== this.props.ele.id || 
-            nextProps.isChecked!== this.state.isChecked
+            nextProps.textInput!== this.state.textInput
             ) {
           return true;
         }
@@ -80,18 +77,15 @@ export default class CheckBoxTextInput extends React.Component{
                     margin: 0
                 }}
             >
-                <CheckBox
-                    size={29}
-                    checked= {this.state.isChecked}
-                    onPress = {()=>{this.setState({isChecked : ! this.state.isChecked})}}
-                    containerStyle = {{padding: 0,top: 5}}
-                    iconType = 'ionicon'
-                    checkedIcon = 'md-checkbox'
-                    uncheckedIcon = 'md-square-outline'
-                    uncheckedColor = {'#ffffff'}
-                    checkedColor = {"#ffffff"}
+                <Animated.View
+                    style={{
+                        borderRadius: 20,
+                        width: 15,
+                        height: 15,
+                        backgroundColor: '#ffffff',
+                        margin: 13,
+                    }}
                 />
-
                 <Animated.View style={{height: this.state.textInputHeight}}>
                     <TextInput
                         multiline
@@ -99,7 +93,6 @@ export default class CheckBoxTextInput extends React.Component{
                             width: (this.props.width-70-20),
                             color: this.props.textColor,
                             backgroundColor: this.props.lighterBackColor,
-                            left: -5,
                             padding: 5,
                             borderColor: this.props.lighterBorderColor,
                         }])}

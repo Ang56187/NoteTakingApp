@@ -98,6 +98,7 @@ export default class ScrollViewNotes extends React.Component{
                         firstHalfArr.map(item=>{
                                 return(
                                     <Animated.View 
+                                        key={item.id}
                                         style={{
                                             backgroundColor: item.backColor,
                                             padding: 8,
