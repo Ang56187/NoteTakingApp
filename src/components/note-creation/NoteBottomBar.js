@@ -28,12 +28,15 @@ export default class NoteBottomBar extends React.Component{
 
     expandView(expandedHeight){
         var ani1 = Animated.timing(this.state.viewHeight,
-            {duration: 600,toValue: expandedHeight+15});
+            {duration: 500,toValue: expandedHeight+15});
         var ani1A = Animated.timing(this.state.viewHeight,
-            {duration: 250,toValue: expandedHeight});
+            {duration: 300,toValue: expandedHeight});
         var ani2 = Animated.timing(this.state.viewY,
-            {duration: 600,toValue:50});
-        return Animated.parallel([Animated.sequence([ani1,ani1A]),ani2]);
+            {duration: 600,toValue:50+15});
+        var ani2A = Animated.timing(this.state.viewY,
+            {duration: 300,toValue:50});
+        return Animated.parallel([Animated.sequence([ani1,ani1A]),
+                                    Animated.sequence([ani2,ani2A])]);
     }
 
     
@@ -117,13 +120,13 @@ export default class NoteBottomBar extends React.Component{
                             //switch from add view to color picker view
                             if(this.state.isColorViewOpen && !this.state.isAddViewOpen){
                                 //add view disappear
-                                this.changeViewX(300,200).start();
-                                this.changeViewOpacity(0,200).start(()=>{
+                                this.changeViewX(300,300).start();
+                                this.changeViewOpacity(0,400).start(()=>{
                                     this.setState({isColorViewOpen: false,isAddViewOpen: true,viewX: new Animated.Value(-300)},
                                         ()=>{
                                             //color view appear
-                                            this.changeViewX(0,200).start();
-                                            this.changeViewOpacity(1,200).start()
+                                            this.changeViewX(0,300).start();
+                                            this.changeViewOpacity(1,400).start()
                                         })
                                 });
                             }   
@@ -157,13 +160,13 @@ export default class NoteBottomBar extends React.Component{
                             //switch from color to add view picker view
                             if(!this.state.isColorViewOpen && this.state.isAddViewOpen){
                                 //add view disappear
-                                this.changeViewX(-300,200).start();
-                                this.changeViewOpacity(0,200).start(()=>{
+                                this.changeViewX(-300,300).start();
+                                this.changeViewOpacity(0,400).start(()=>{
                                     this.setState({isAddViewOpen: false,isColorViewOpen: true,viewX: new Animated.Value(300)},
                                         ()=>{
                                             //color view appear
-                                            this.changeViewX(0,200).start();
-                                            this.changeViewOpacity(1,200).start()
+                                            this.changeViewX(0,300).start();
+                                            this.changeViewOpacity(1,400).start()
                                         })
                                 });
                             }   

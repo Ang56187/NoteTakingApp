@@ -24,7 +24,7 @@ export default class NoteHeaderBar extends React.Component{
                 {/* Save the note created */}
                 <Button
                     type = "clear" 
-                    onPress={() =>{}}
+                    onPress={() =>{this.props.handleSaveNote()}}
                     icon = {
                     <Icon
                         name= {"md-save"} 

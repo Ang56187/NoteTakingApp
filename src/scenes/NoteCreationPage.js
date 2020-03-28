@@ -7,9 +7,13 @@ import NoteHeaderBar from '../components/note-creation/NoteHeaderBar';
 import NoteBottomBar from '../components/note-creation/NoteBottomBar';
 import CheckBoxTextInput from '../components/note-component/CheckBoxTextInput'
 import PointerTextInput from '../components/note-component/PointerTextInput'
+import NotesList from '../objects/NotesList'
+import  * as SQLite from 'expo-sqlite';
 
 const backgroundColor = '#21B2F2';
 const deviceWidth = Math.round(Dimensions.get('window').width);
+const db = SQLite.openDatabase("db.db");
+
 
 export default class NoteCreationPage extends React.Component{
     constructor(props){
@@ -18,6 +22,7 @@ export default class NoteCreationPage extends React.Component{
             titleTextInput: '',
             titleTextInputHeight: new Animated.Value(50),
             showTitleError: false,
+            showTitleEmpty: false,
             textInput: '',
             textInputHeight: new Animated.Value(50),
 
@@ -30,7 +35,9 @@ export default class NoteCreationPage extends React.Component{
 
             //for storing checkboxes/options/notifications/normal text..
             componentArr: [],
-            disabled: false
+            disabled: false,
+
+            test: null
         }
 
         this.addNewEle = false;
@@ -47,6 +54,8 @@ export default class NoteCreationPage extends React.Component{
         this.removeComponent = this.removeComponent.bind(this);
         this.handleUpdateNoteText = this.handleUpdateNoteText.bind(this);
         this.afterAnimationComplete = this.afterAnimationComplete.bind(this);
+        this.handleSaveNote = this.handleSaveNote.bind(this);
+
     }
 
     //for adding/removing components
@@ -65,7 +74,7 @@ export default class NoteCreationPage extends React.Component{
             //TODO
             //figure out how to save text too
             //newValue.type and text to be saved in note obj later as content
-            const newValue = {id: this.index,type: eleType,text: ''}
+            const newValue = {id: this.index,type: eleType,text: '',isChecked: null}
 
             this.setState({
                 //disable button so it wont create new component,
@@ -89,8 +98,6 @@ export default class NoteCreationPage extends React.Component{
         },()=>{
             //animate that closing gap once middle component deleted
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-            console.log('\n')
-            // this.state.componentArr.forEach(e=>{console.log(e)})
         })    
     }
 
@@ -151,6 +158,81 @@ export default class NoteCreationPage extends React.Component{
         this.setState({textColor: color});
     }
 
+    addZero(x,isDate){
+        if(isDate == null){
+            isDate = true;
+        }
+        if(x>9999){
+            x=x-9999
+        }
+        if(x<10 && isDate){
+            x="0"+x;
+        }
+        else if(x<10 && !isDate){
+            x= "000"+x
+        } 
+        else if(x<100 && !isDate){
+             x= "00"+x
+        }
+        else if(x<1000 && !isDate){
+            x= "0"+x
+       }
+        return x;
+    }
+
+    
+
+    handleSaveNote(){
+        if(this.state.titleTextInput == ""){
+            this.setState({showTitleEmpty : true});
+        }
+        else{   
+            //heres the constructor of note
+            //(id,title,content,dateTime,isFavourited,backColor,textColor)
+            let index=0;
+            const dupeArr = [...this.state.componentArr]
+            //first, reorganize components so its id will be set according to array index element
+            dupeArr.forEach(ele=>{
+                ele.id=index;
+                index++;
+            })
+
+            var today = new Date();
+            var date = today.getFullYear()+'-'+this.addZero(today.getMonth()+1)+'-'+this.addZero(today.getDate());
+            var time = this.addZero(today.getHours()) + ":" + this.addZero(today.getMinutes()) + ":" + this.addZero(today.getSeconds());
+            var dateTime = date+' '+time;
+
+            //organize noteNum to (note list size,today date, minute, second)
+            var noteNum = this.addZero(new NotesList().noteList.length,false).toString()+
+                            this.addZero(today.getHours())+
+                            this.addZero(today.getMinutes())+
+                            this.addZero(today.getSeconds());
+            // noteNum = '0014083920';
+    
+            //open database
+            db.transaction(tx=>{
+                tx.executeSql('insert into notes(noteNum,title,firstNote,dateTime,isFavourited,backColor,textColor)'+
+                'values(?,?,?,?,?,?,?)',
+                [noteNum,this.state.titleTextInput,this.state.textInput,dateTime,0,this.state.backColor,this.state.textColor],
+                (_,ResultSet)=>{console.log(ResultSet)},(_,error)=>{console.log(error)}),
+                tx.executeSql('select id from notes where noteNum = ?',[noteNum],
+                (_,{rows:{_array}})=>{
+                    _array.forEach(e=>{
+                        //execute once found out added id, added the checkboxes,pointers etc from dupeArr
+                        dupeArr.forEach(ele=>{
+                            tx.executeSql('insert into noteContent (noteType,content,isChecked,noteID)'+
+                            'values(?,?,?,?)',
+                            [ele.type,ele.text,(ele.isChecked==null ? null : ele.isChecked),e.id],
+                            (_,ResultSet)=>{console.log(ResultSet)},
+                            (_,error)=>{console.log(error)})            
+                        });
+                    })
+                },
+                (_,error)=>{console.log(error)})
+            });
+        }
+    }
+
     render(){
 
         return(
@@ -164,7 +246,7 @@ export default class NoteCreationPage extends React.Component{
                             right: 0,
                 }}>
                     {/* The header with 2 buttons and text in middle */}
-                    <NoteHeaderBar/>
+                    <NoteHeaderBar handleSaveNote={this.handleSaveNote}/>
                     {/* Vew to always keep textinput above keyboard, or else cant see */}
                     <KeyboardAvoidingView 
                         behavior="padding" 
@@ -175,7 +257,6 @@ export default class NoteCreationPage extends React.Component{
                         <ScrollView 
                             contentContainerStyle={styles.scrollStyle}
                             ref={(el)=>{this.scrollbar = el;}}
-
                         >
                             {/* label to show text "title" */}
                             <Text style={styles.textLabelStyle}>Title</Text>
@@ -197,6 +278,9 @@ export default class NoteCreationPage extends React.Component{
                                         if(this.state.titleTextInput.length <= 100){
                                             this.setState({showTitleError:false})
                                         }
+                                        if(this.state.titleTextInput.length>=0 && this.state.showTitleEmpty == true){
+                                            this.setState({showTitleEmpty: false})
+                                        }
                                     }}
                                     //detect error if key typed even if max char reached
                                     onKeyPress = {e=>{
@@ -213,7 +297,14 @@ export default class NoteCreationPage extends React.Component{
                             {this.state.showTitleError ? 
                             <Text style={styles.errorTextStyle}>
                                 Maximum characters for title is 100.
-                            </Text> : null}
+                            </Text> 
+                            : null}
+
+                            {this.state.showTitleEmpty ? 
+                            <Text style={styles.errorTextStyle}>
+                                Title must be filled in.*
+                            </Text> 
+                            : null}
                             
                             {/* label to show text "Notes list" */}
                             <Text style={styles.textLabelStyle}>Notes</Text>

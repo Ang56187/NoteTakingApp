@@ -3,12 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="14202107-d9e3-465f-a736-f55d052da7df" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/color-select/CirclePicker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/color-select/CirclePicker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/main-wrapper/HeaderBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/main-wrapper/HeaderBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/main-wrapper/ScrollViewNotes.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/main-wrapper/ScrollViewNotes.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/note-creation/NoteBottomBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/note-creation/NoteBottomBar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/note-creation/NoteHeaderBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/note-creation/NoteHeaderBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/objects/Note.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/objects/Note.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/objects/NotesList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/objects/NotesList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/MainWrapper.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/MainWrapper.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/scenes/NoteCreationPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/NoteCreationPage.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
