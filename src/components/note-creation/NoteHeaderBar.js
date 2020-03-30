@@ -2,6 +2,10 @@ import React,{Component} from 'react';
 import { StyleSheet,View,Text } from 'react-native';
 import {Button} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons'
+import { StackActions } from '@react-navigation/native';
+import  * as SQLite from 'expo-sqlite';
+import Note from '../../objects/Note'
+
 
 export default class NoteHeaderBar extends React.Component{
     render(){
@@ -10,7 +14,10 @@ export default class NoteHeaderBar extends React.Component{
                 {/* Go back to main page */}
                 <Button
                     type = "clear" 
-                    onPress={() =>{}}
+                    onPress={() =>{
+                        const popAction = StackActions.pop(1);
+                        this.props.navigation.dispatch(popAction);
+                    }}
                     icon = {
                     <Icon
                         name= {"md-arrow-back"} 
@@ -24,7 +31,9 @@ export default class NoteHeaderBar extends React.Component{
                 {/* Save the note created */}
                 <Button
                     type = "clear" 
-                    onPress={() =>{this.props.handleSaveNote()}}
+                    onPress={() =>{
+                        this.props.handleSaveNote()
+                    }}
                     icon = {
                     <Icon
                         name= {"md-save"} 

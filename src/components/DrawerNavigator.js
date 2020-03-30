@@ -1,16 +1,23 @@
 import { createDrawerNavigator,  
           DrawerContentScrollView,
-          DrawerItemList,
           DrawerItem, } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer, StackActions } from '@react-navigation/native';
 import React,{Component} from 'react';
 import { StyleSheet,View,Text,TouchableOpacity } from 'react-native';
 import MainWrapperHook from '../scenes/MainWrapper';
+import NoteCreationPage from '../scenes/NoteCreationPage';
 import Animated from 'react-native-reanimated';
 import {LinearGradient} from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
+import  * as SQLite from 'expo-sqlite';
+import Note from '../objects/Note';
+import { normalize } from 'react-native-elements';
+
 
 const Drawer = createDrawerNavigator();
+const Stack = createStackNavigator();
+
 
 //create custom side drawer (including animation and contents in it)
 function customDrawerContent({progress,...rest}) {
@@ -139,25 +146,43 @@ function customDrawerContent({progress,...rest}) {
 
 export default class DrawerNavigator extends React.Component{
     //method to add main page component
-    home = ({navigation}) => {
+    home = ({navigation,route}) => {
       return <MainWrapperHook 
-                navigation = {navigation} 
+                navigation = {navigation} route={route}
             />
     }
 
+    noteCreation=({navigation,route})=>{
+      return <NoteCreationPage navigation={navigation} route={route}/>
+    }
+
+
+    mainPage=({navigation})=>{
+      return(
+        <Drawer.Navigator 
+        initialRouteName="home"   
+        drawerStyle={{
+                      backgroundColor: 'transparent',
+                      justifyContent: 'center',
+                    }}
+        drawerContent={props => customDrawerContent(props)}
+        //temporary disable swipe first
+        //later find solution to disable gesture on note creation page
+        //TODO
+        >
+          <Drawer.Screen name="home" component={this.home} initialParams={{shouldUpdate: null}}/>
+          {/* <Drawer.Screen name="noteCreation" component={this.noteCreation} /> */}
+        </Drawer.Navigator>
+      )
+    }
+    
     render(){  
       return(
-          <NavigationContainer>
-          <Drawer.Navigator 
-            initialRouteName="home"   
-            drawerStyle={{
-                          backgroundColor: 'transparent',
-                          justifyContent: 'center',
-                        }}
-            drawerContent={props => customDrawerContent(props)}
-          >
-            <Drawer.Screen name="home" component={this.home}/>
-          </Drawer.Navigator>
+        <NavigationContainer>
+          <Stack.Navigator headerMode="none" mode='modal' initialRouteName='home'>
+            <Stack.Screen name="home" component={this.mainPage}/>
+            <Stack.Screen name="noteCreation" component={this.noteCreation}/>
+          </Stack.Navigator>
         </NavigationContainer>
       )
     }

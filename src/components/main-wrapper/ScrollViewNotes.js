@@ -1,8 +1,14 @@
 import React,{Component} from 'react';
 import { StyleSheet,Text,View,ScrollView,Dimensions } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
+import  * as SQLite from 'expo-sqlite';
+import Note from '../../objects/Note';
+
+
 
 const deviceWidth = Math.round(Dimensions.get('window').width);
+const db = SQLite.openDatabase('db.db');
+
 
 export default class ScrollViewNotes extends React.Component{
     constructor(props){
@@ -33,8 +39,17 @@ export default class ScrollViewNotes extends React.Component{
 
     }
 
+    //check if component should update
+    shouldComponentUpdate(nextProps, nextState) {
+        if (nextProps.noteTitles.length !== this.props.noteTitles.length) {
+            return true;
+        }
+        return false;
+    }
+
     //mount all the notes
     componentDidMount(){
+
         //if right side view is taller than left side view
         //send over its note to left side to even the height out
         //TODO
@@ -42,34 +57,33 @@ export default class ScrollViewNotes extends React.Component{
         //TLDR
         //if exceed, right to left,
         //else from left to right
-        if((this.state.view1Height-this.state.view2Height)>=-250){
-            console.log('right to left')
+        // if((this.state.view1Height-this.state.view2Height)>=-250){
+        //     console.log('right to left')
 
-            //get smallest title length element
-            let smallest = this.secondHalfArr[0];
-            this.secondHalfArr.forEach(e=>{
-                if(e.title.length<=smallest.title.length){
-                    smallest=e
-                }
-            })
-            
-            this.firstHalfArr.push(smallest)
-            this.secondHalfArr.splice(this.secondHalfArr.indexOf(smallest.id),1)
-        }
-        else if((this.state.view1Height-this.state.view2Height)>=250){
-            console.log('left to right')
+        //     //get smallest title length element
+        //     let smallest = this.secondHalfArr[0];
+        //     this.secondHalfArr.forEach(e=>{
+        //         if(e.title.length<=smallest.title.length){
+        //             smallest=e
+        //         }
+        //     })
+        //     this.firstHalfArr.push(smallest)
+        //     this.secondHalfArr.splice(this.secondHalfArr.indexOf(smallest.id),1)
+        // }
+        // else if((this.state.view1Height-this.state.view2Height)>=250){
+        //     console.log('left to right')
 
-            //get smallest title length element
-            let smallest = this.firstHalfArr[0];
-            this.firstHalfArr.forEach(e=>{
-                if(e.title.length<=smallest.title.length){
-                    smallest=e
-                }
-            })
+        //     //get smallest title length element
+        //     let smallest = this.firstHalfArr[0];
+        //     this.firstHalfArr.forEach(e=>{
+        //         if(e.title.length<=smallest.title.length){
+        //             smallest=e
+        //         }
+        //     })
 
-            this.secondHalfArr.push(smallest)
-            this.firstHalfArr.splice(this.firstHalfArr.indexOf(smallest.id),1)
-        }
+        //     this.secondHalfArr.push(smallest)
+        //     this.firstHalfArr.splice(this.firstHalfArr.indexOf(smallest.id),1)
+        // }
     }
 
     //method check if it reached bottom of scroll
@@ -145,6 +159,8 @@ export default class ScrollViewNotes extends React.Component{
                     {
                         this.firstHalfArr.map(item=>{
                                 return(
+                                    //TODO
+                                    //maybe create new class for this specific component
                                     <Animated.View 
                                         key={item.id}
                                         style={{
@@ -157,8 +173,8 @@ export default class ScrollViewNotes extends React.Component{
                                             borderRadius: 5
                                         }}
                                     >
-                                        <Text style={styles.note}>{item.title}</Text>
-                                        <Text style={styles.noteDate}>{item.dateTime}</Text>
+                                        <Text style={StyleSheet.flatten([styles.note])}>{item.title}</Text>
+                                        <Text style={StyleSheet.flatten([styles.noteDate])}>{item.dateTime}</Text>
                                     </Animated.View>
                                 )
                         })

@@ -7,8 +7,10 @@ import NoteHeaderBar from '../components/note-creation/NoteHeaderBar';
 import NoteBottomBar from '../components/note-creation/NoteBottomBar';
 import CheckBoxTextInput from '../components/note-component/CheckBoxTextInput'
 import PointerTextInput from '../components/note-component/PointerTextInput'
-import NotesList from '../objects/NotesList'
+import Note from '../objects/Note'
 import  * as SQLite from 'expo-sqlite';
+import { CommonActions } from '@react-navigation/native';
+
 
 const backgroundColor = '#21B2F2';
 const deviceWidth = Math.round(Dimensions.get('window').width);
@@ -70,7 +72,6 @@ export default class NoteCreationPage extends React.Component{
 
     addComponent = (eleType) =>{
             this.addNewEle = true
-
             //TODO
             //figure out how to save text too
             //newValue.type and text to be saved in note obj later as content
@@ -198,12 +199,12 @@ export default class NoteCreationPage extends React.Component{
             })
 
             var today = new Date();
-            var date = today.getFullYear()+'-'+this.addZero(today.getMonth()+1)+'-'+this.addZero(today.getDate());
+            var date = today.getFullYear()+'-'+this.addZero(today.getMonth())+'-'+this.addZero(today.getDate());
             var time = this.addZero(today.getHours()) + ":" + this.addZero(today.getMinutes()) + ":" + this.addZero(today.getSeconds());
             var dateTime = date+' '+time;
 
             //organize noteNum to (note list size,today date, minute, second)
-            var noteNum = this.addZero(new NotesList().noteList.length,false).toString()+
+            var noteNum = this.addZero(Math.floor((Math.random() * 9999) + 1),false).toString()+
                             this.addZero(today.getHours())+
                             this.addZero(today.getMinutes())+
                             this.addZero(today.getSeconds());
@@ -229,7 +230,8 @@ export default class NoteCreationPage extends React.Component{
                     })
                 },
                 (_,error)=>{console.log(error)})
-            });
+            })
+            this.props.navigation.navigate('home')
         }
     }
 
@@ -246,7 +248,11 @@ export default class NoteCreationPage extends React.Component{
                             right: 0,
                 }}>
                     {/* The header with 2 buttons and text in middle */}
-                    <NoteHeaderBar handleSaveNote={this.handleSaveNote}/>
+                    <NoteHeaderBar 
+                        handleSaveNote={this.handleSaveNote}
+                        navigation={this.props.navigation}
+                        route={this.props.route}
+                    />
                     {/* Vew to always keep textinput above keyboard, or else cant see */}
                     <KeyboardAvoidingView 
                         behavior="padding" 

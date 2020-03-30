@@ -12,7 +12,6 @@ import  * as SQLite from 'expo-sqlite';
 const db = SQLite.openDatabase('db.db');
 //TODO, solve db problem,
 export default function App() {
-  console.log('dd')
   db.transaction(tx => {
     db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => console.log('Foreign keys turned on')),
     //create notes list
@@ -25,11 +24,11 @@ export default function App() {
       'contentID INTEGER NOT NULL PRIMARY KEY, noteType TEXT, isChecked integer,content LONGTEXT,'+
       'noteID INTEGER REFERENCES notes(id))',[],(_,ResultSet)=>{},
       (_,error)=>{console.log(error)})
-    tx.executeSql('select * from notes',[],(_,ResultSet)=>{console.log(ResultSet)},
-    (_,error)=>{console.log(error)})
+    // tx.executeSql('select * from noteContent',[],(_,ResultSet)=>{console.log(ResultSet)},
+    // (_,error)=>{console.log(error)})
   });
   return (
-    // <DrawerNavigator/>
-    <NoteCreationPage/>
+    <DrawerNavigator/>
+    // <NoteCreationPage/>
   );
 }
