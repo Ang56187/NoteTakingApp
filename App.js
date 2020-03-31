@@ -24,7 +24,7 @@ export default function App() {
       'contentID INTEGER NOT NULL PRIMARY KEY, noteType TEXT, isChecked integer,content LONGTEXT,'+
       'noteID INTEGER REFERENCES notes(id))',[],(_,ResultSet)=>{},
       (_,error)=>{console.log(error)})
-    // tx.executeSql('select * from noteContent',[],(_,ResultSet)=>{console.log(ResultSet)},
+    // tx.executeSql('drop table notes',[],(_,ResultSet)=>{console.log(ResultSet)},
     // (_,error)=>{console.log(error)})
   });
   return (

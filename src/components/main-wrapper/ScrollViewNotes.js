@@ -2,8 +2,8 @@ import React,{Component} from 'react';
 import { StyleSheet,Text,View,ScrollView,Dimensions } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
 import  * as SQLite from 'expo-sqlite';
+import NoteTile from './NoteTile'
 import Note from '../../objects/Note';
-
 
 
 const deviceWidth = Math.round(Dimensions.get('window').width);
@@ -22,20 +22,6 @@ export default class ScrollViewNotes extends React.Component{
 
        this.scrollIndex;
        this.scrollY;
-
-        //split to 2 array
-        //concentrate all long titles to middle
-        this.newArr = this.props.noteTitles.sort(
-            function(a,b){return a.title.length-b.title.length}
-        );
-        
-        this.indexToSplit = Math.round(this.props.noteTitles.length/2);
-        this.firstHalfArr = this.newArr.slice(0,this.indexToSplit);
-        this.secondHalfArr = this.newArr.slice(this.indexToSplit);
-
-        this.secondHalfArr.sort(function(a,b){
-            return b.title.length-a.title.length;
-        })
 
     }
 
@@ -109,6 +95,19 @@ export default class ScrollViewNotes extends React.Component{
     }
 
     render(){
+                //split to 2 array
+        //concentrate all long titles to middle
+        this.newArr = this.props.noteTitles.sort(
+            function(a,b){return a.title.length-b.title.length}
+        );
+        
+        this.indexToSplit = Math.round(this.props.noteTitles.length/2);
+        this.firstHalfArr = this.newArr.slice(0,this.indexToSplit);
+        this.secondHalfArr = this.newArr.slice(this.indexToSplit);
+
+        this.secondHalfArr.sort(function(a,b){
+            return b.title.length-a.title.length;
+        })
 
         return(
             <ScrollView 
@@ -161,21 +160,10 @@ export default class ScrollViewNotes extends React.Component{
                                 return(
                                     //TODO
                                     //maybe create new class for this specific component
-                                    <Animated.View 
-                                        key={item.id}
-                                        style={{
-                                            backgroundColor: item.backColor,
-                                            padding: 8,
-                                            margin: 5,
-                                            width: 170,//deviceWidth-20,
-                                            flexDirection: 'column',
-                                            justifyContent: 'center',
-                                            borderRadius: 5
-                                        }}
-                                    >
-                                        <Text style={StyleSheet.flatten([styles.note])}>{item.title}</Text>
-                                        <Text style={StyleSheet.flatten([styles.noteDate])}>{item.dateTime}</Text>
-                                    </Animated.View>
+                                    <NoteTile 
+                                        item={item} 
+                                        navigation={this.props.navigation}
+                                     />
                                 )
                         })
                     }
@@ -194,20 +182,10 @@ export default class ScrollViewNotes extends React.Component{
                     {
                         this.secondHalfArr.map(item=>{
                             return(
-                                <Animated.View 
-                                    style={{
-                                        backgroundColor: item.backColor,
-                                        padding: 8,
-                                        margin: 5,
-                                        width: 170,//deviceWidth-20,
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        borderRadius: 5
-                                    }}
-                                >
-                                    <Text style={styles.note}>{item.title}</Text>
-                                    <Text style={styles.noteDate}>{item.dateTime}</Text>
-                                </Animated.View>
+                                <NoteTile
+                                    item={item} 
+                                    navigation={this.props.navigation}
+                                />
                             )
                         })
                     }
@@ -254,6 +232,22 @@ export default class ScrollViewNotes extends React.Component{
             //     )}
             //     keyExtractor={item=> item.id}
             // />
+
+                // <Animated.View 
+        //     key={item.id}
+        //     style={{
+        //         backgroundColor: item.backColor,
+        //         padding: 8,
+        //         margin: 5,
+        //         width: 170,//deviceWidth-20,
+        //         flexDirection: 'column',
+        //         justifyContent: 'center',
+        //         borderRadius: 5
+        //     }}
+        // >
+        //     <Text style={StyleSheet.flatten([styles.note])}>{item.title}</Text>
+        //     <Text style={StyleSheet.flatten([styles.noteDate])}>{item.dateTime}</Text>
+        // </Animated.View>
         );
     }
 }
@@ -271,15 +265,5 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         flexWrap: 'wrap',
         width: '100%'
-    },    
-    note:{
-        fontSize: 18,
-        color: 'white',
-        fontFamily: 'sans-serif'
-    },
-    noteDate:{
-        fontSize: 13,
-        color: 'white',
-        paddingTop: 20
     }
 });

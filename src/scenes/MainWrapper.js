@@ -13,7 +13,7 @@ import  * as SQLite from 'expo-sqlite';
 
 
 //variables
-var filteredNotes = [];
+let filteredNotes = [];
 
 //wrapped around class component so it can actually receive hooks
 //also onyl way to update noteTitles
@@ -43,6 +43,7 @@ class MainWrapper extends React.Component{
             //search input,
             search: '',
             noteTitles: [],
+            dupeNoteTitles: [],
             //for animation purposes
             animateX: new Animated.Value(50),
             animateBottomPad: new Animated.Value(10),
@@ -70,7 +71,7 @@ class MainWrapper extends React.Component{
         const switchToThisScreen = this.props.navigation.addListener('focus',()=>{
             // console.log("it works")
             //console log printed, means it worked,
-            //now to make it update note list
+            // now to make it update note list
             db.transaction(tx=>{
                 tx.executeSql('select * from notes',[],
                 (_,{rows:{_array}})=>{
@@ -90,22 +91,17 @@ class MainWrapper extends React.Component{
                         e.backColor,e.textColor));
                         index++;
                     })
-                    this.setState({noteTitles: dupeArr});
+                    this.setState({
+                        noteTitles: dupeArr,
+                        dupeNoteTitles: dupeArr 
+                    });
                 },
                 (_,error)=>{console.log(error)})
             })
-            console.log(this.state.noteTitles[27])
         })
 
-    }
 
-    //check if component should update
-    // shouldComponentUpdate(nextProps, nextState) {
-    //     if (nextState.noteTitles.length !== this.state.noteTitles.length) {
-    //         return true;
-    //     }
-    //     return false;
-    // }
+    }
 
     componentDidMount(){
         db.transaction(tx=>{
@@ -127,12 +123,14 @@ class MainWrapper extends React.Component{
                     e.backColor,e.textColor));
                     index++;
                 })
-                this.setState({noteTitles: dupeArr});
+                this.setState({
+                    noteTitles: dupeArr,
+                    dupeNoteTitles: dupeArr 
+                });
             },
             (_,error)=>{console.log(error)})
         })
     }
-
 
     //set method for buttons click
     handleHamburgerBtnOnClick(){
@@ -152,7 +150,7 @@ class MainWrapper extends React.Component{
         //filter if something typed in search bar
         if(search !== ""){
             //assign filtered
-            filteredNotes = this.state.noteTitles.filter(item=>{
+            filteredNotes = this.state.dupeNoteTitles.filter(item=>{
                 const lowerCaseItem = item.title.toLowerCase();
                 const filter = search.toLowerCase();
 
@@ -162,7 +160,7 @@ class MainWrapper extends React.Component{
             });
         }
         else{
-            filteredNotes = this.state.noteTitles;
+            filteredNotes = this.state.dupeNoteTitles;
         }
   
         this.setState({
@@ -191,13 +189,6 @@ class MainWrapper extends React.Component{
     //where actual components were rendered
     render(){
 
-        const {noteTitles} = this.state;
-        //if empty,refresh
-
-        if (noteTitles === null || noteTitles.length === 0) {
-            return null;
-          }
-
         // open drawer when click btn
         if(this.state.onClickedHamburgerBtn){
             this.props.navigation.openDrawer();
@@ -221,7 +212,9 @@ class MainWrapper extends React.Component{
                     expandButton = {this.expandButton}
                     shrinkButton = {this.shrinkButton}
                     onClickedSearchBtn ={this.state.onClickedSearchBtn}
+                    navigation = {this.props.navigation}
                 />
+
                 {/* button to add new note */}
                 <Animated.View 
                     style = 
@@ -246,7 +239,8 @@ class MainWrapper extends React.Component{
                         style={{color: 'white'}}
                         />}
                         onPress = {()=>{
-                            this.props.navigation.navigate('noteCreation')
+                            //TODO
+                            this.props.navigation.navigate('noteCreation',{transition: 'goToNoteCreation'})
                         }
                         }
                     /> 

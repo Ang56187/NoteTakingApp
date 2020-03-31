@@ -236,7 +236,6 @@ export default class NoteCreationPage extends React.Component{
     }
 
     render(){
-
         return(
             <View style={styles.container}>
                 <View style = {{

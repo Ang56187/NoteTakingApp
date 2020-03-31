@@ -2,7 +2,7 @@ import { createDrawerNavigator,
           DrawerContentScrollView,
           DrawerItem, } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer, StackActions } from '@react-navigation/native';
+import { NavigationContainer, StackActions,useRoute } from '@react-navigation/native';
 import React,{Component} from 'react';
 import { StyleSheet,View,Text,TouchableOpacity } from 'react-native';
 import MainWrapperHook from '../scenes/MainWrapper';
@@ -144,7 +144,16 @@ function customDrawerContent({progress,...rest}) {
   );
 }
 
+
 export default class DrawerNavigator extends React.Component{
+    constructor(props){
+      super(props);
+      this.state={
+        notePositionX: 0,
+        notePositionY: 0
+      }
+    }
+
     //method to add main page component
     home = ({navigation,route}) => {
       return <MainWrapperHook 
@@ -160,28 +169,66 @@ export default class DrawerNavigator extends React.Component{
     mainPage=({navigation})=>{
       return(
         <Drawer.Navigator 
-        initialRouteName="home"   
-        drawerStyle={{
-                      backgroundColor: 'transparent',
-                      justifyContent: 'center',
-                    }}
-        drawerContent={props => customDrawerContent(props)}
+          drawerStyle={{
+                        backgroundColor: 'transparent',
+                        justifyContent: 'center',
+                      }}
+          drawerContent={props => customDrawerContent(props)}
         //temporary disable swipe first
         //later find solution to disable gesture on note creation page
         //TODO
         >
-          <Drawer.Screen name="home" component={this.home} initialParams={{shouldUpdate: null}}/>
+          <Drawer.Screen name="home" component={this.home}/>
           {/* <Drawer.Screen name="noteCreation" component={this.noteCreation} /> */}
         </Drawer.Navigator>
       )
     }
-    
-    render(){  
+
+    getRoute= ({route})=>{
+      return route;
+    }
+
+    render(){ 
+      const { route } = this.props;
+      const goToNoteCreationAni = ({ current,layouts }) => {
+        const translateY = current.progress.interpolate({
+          inputRange: [0,1],
+          outputRange: [800,0],
+        });
+
+        const animateRadius = current.progress.interpolate({
+          inputRange: [0,1],
+          outputRange: [300,0],
+        });
+
+        return {
+          cardStyle: {
+            transform: [{scale: current.progress},{translateY}],
+            opacity: current.progress,
+            borderRadius: animateRadius,
+            overflow: 'hidden'
+        },
+        }
+        
+      };
+
       return(
+        // mode='modal'
         <NavigationContainer>
-          <Stack.Navigator headerMode="none" mode='modal' initialRouteName='home'>
-            <Stack.Screen name="home" component={this.mainPage}/>
-            <Stack.Screen name="noteCreation" component={this.noteCreation}/>
+          <Stack.Navigator 
+            headerMode="none" 
+            initialRouteName='home'
+          >
+            <Stack.Screen 
+              name="home" 
+              component={this.mainPage}
+              initialRouteName={{ transition: '' }}
+            />
+            <Stack.Screen 
+              name="noteCreation" 
+              component={this.noteCreation}
+              options={{ cardStyleInterpolator: (goToNoteCreationAni) }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       )

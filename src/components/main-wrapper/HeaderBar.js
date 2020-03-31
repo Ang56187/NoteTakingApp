@@ -161,7 +161,9 @@ class HeaderBar extends React.Component{
                     <Button 
                             type = "clear" 
                             onPress={() => {   
-                                this.props.handleSearchBtnOnClick();                                   
+                                this.props.handleSearchBtnOnClick();   
+                                this.search.cancel();       
+                                this.search.clear();                                 
                             }}
                             ref={searchBtn => this.searchBtn = searchBtn}
                             icon = {
