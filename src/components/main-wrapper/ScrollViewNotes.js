@@ -17,7 +17,9 @@ export default class ScrollViewNotes extends React.Component{
             scrollIndex: 0,
             scaleX: new Animated.Value(40),
             view1Height: 0,
-            view2Height: 0
+            view2Height: 0,
+            view1X: 0,
+            view2X: 0
        };
 
        this.scrollIndex;
@@ -95,7 +97,8 @@ export default class ScrollViewNotes extends React.Component{
     }
 
     render(){
-                //split to 2 array
+
+        //split to 2 array
         //concentrate all long titles to middle
         this.newArr = this.props.noteTitles.sort(
             function(a,b){return a.title.length-b.title.length}
@@ -161,8 +164,12 @@ export default class ScrollViewNotes extends React.Component{
                                     //TODO
                                     //maybe create new class for this specific component
                                     <NoteTile 
+                                        key={item.id}
                                         item={item} 
                                         navigation={this.props.navigation}
+                                        //for drawer av js file
+                                        setAnimationType = {this.props.setAnimationType}
+                                        setNotePosition = {this.props.setNotePosition}
                                      />
                                 )
                         })
@@ -183,8 +190,12 @@ export default class ScrollViewNotes extends React.Component{
                         this.secondHalfArr.map(item=>{
                             return(
                                 <NoteTile
+                                    key={item.id}
                                     item={item} 
                                     navigation={this.props.navigation}
+                                    //for drawer av js file
+                                    setAnimationType = {this.props.setAnimationType}
+                                    setNotePosition = {this.props.setNotePosition}
                                 />
                             )
                         })

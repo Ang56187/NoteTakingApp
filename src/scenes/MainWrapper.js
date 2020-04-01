@@ -19,16 +19,15 @@ let filteredNotes = [];
 //also onyl way to update noteTitles
 //(due to only restricted to functions)
 
-const MainWrapperHook = (props) => {  
-    return <MainWrapper
-        navigation={props.navigation} route={props.route}/>
-}
+// const MainWrapperHook = (props) => {  
+//     return <MainWrapper
+//         navigation={props.navigation} route={props.route} getAnimationType={props.getAnimationType}/>
+// }
 
 const db = SQLite.openDatabase('db.db');
 
-export default MainWrapperHook;
 
-class MainWrapper extends React.Component{
+export default class MainWrapper extends React.Component{
     constructor(props){
         super(props);
 
@@ -213,6 +212,9 @@ class MainWrapper extends React.Component{
                     shrinkButton = {this.shrinkButton}
                     onClickedSearchBtn ={this.state.onClickedSearchBtn}
                     navigation = {this.props.navigation}
+                    //for drawer av js file
+                    setAnimationType = {this.props.setAnimationType}
+                    setNotePosition = {this.props.setNotePosition}
                 />
 
                 {/* button to add new note */}
@@ -240,7 +242,8 @@ class MainWrapper extends React.Component{
                         />}
                         onPress = {()=>{
                             //TODO
-                            this.props.navigation.navigate('noteCreation',{transition: 'goToNoteCreation'})
+                            this.props.setAnimationType("goToNoteCreation");
+                            this.props.navigation.navigate('noteCreation');
                         }
                         }
                     /> 

@@ -6,7 +6,8 @@ export default class NoteTile extends React.Component{
     constructor(props){
         super(props);
         this.state={
-
+            positionX: 0,
+            positionY:0
         }
         this.animateOpacity = new Animated.Value(0);
         this.animateScale = new Animated.Value(0);
@@ -49,9 +50,23 @@ export default class NoteTile extends React.Component{
             //TODO
             //later change onPress after done note display page
             <TouchableOpacity 
-                key={this.props.item.id}
+                ref={note => this.touchNote = note}
+                // onLayout = {(e)=>{
+                //     this.setState({positionX:e.nativeEvent.layout.x,
+                //         positionY:e.nativeEvent.layout.y})
+                // }}
                 activeOpacity={0.8}
-                onPress={()=>{this.props.navigation.navigate('noteCreation')}}
+                onPress={()=>{
+                    this.touchNote.measure((fx, fy, width, height, px, py)=>{
+                        // console.log("position y" + py)
+                        // console.log("position x" + px)
+                        this.props.setNotePosition(px,py);
+                        setTimeout(()=>{
+                            this.props.setAnimationType("goToNote");
+                            this.props.navigation.navigate('noteCreation');
+                        },60)
+                    });
+                }}
             >
                 <Animated.View 
                     style={{

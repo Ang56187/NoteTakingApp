@@ -4,8 +4,8 @@ import { createDrawerNavigator,
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer, StackActions,useRoute } from '@react-navigation/native';
 import React,{Component} from 'react';
-import { StyleSheet,View,Text,TouchableOpacity } from 'react-native';
-import MainWrapperHook from '../scenes/MainWrapper';
+import { StyleSheet,View,Text,TouchableOpacity,Dimensions } from 'react-native';
+import MainWrapper from '../scenes/MainWrapper';
 import NoteCreationPage from '../scenes/NoteCreationPage';
 import Animated from 'react-native-reanimated';
 import {LinearGradient} from 'expo-linear-gradient';
@@ -17,6 +17,10 @@ import { normalize } from 'react-native-elements';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
+
+const deviceWidth = Math.round(Dimensions.get('window').width);
+const deviceHeight = Math.round(Dimensions.get('window').height);
+
 
 
 //create custom side drawer (including animation and contents in it)
@@ -143,6 +147,7 @@ function customDrawerContent({progress,...rest}) {
     </Animated.View>
   );
 }
+//end of custom drawer
 
 
 export default class DrawerNavigator extends React.Component{
@@ -150,19 +155,31 @@ export default class DrawerNavigator extends React.Component{
       super(props);
       this.state={
         notePositionX: 0,
-        notePositionY: 0
+        notePositionY: 0,
+        animationType: ''
       }
+
+      this.setAnimationType = this.setAnimationType.bind(this);
+      this.setNotePosition = this.setNotePosition.bind(this);
+
     }
 
     //method to add main page component
     home = ({navigation,route}) => {
-      return <MainWrapperHook 
-                navigation = {navigation} route={route}
-            />
+      return <MainWrapper
+          navigation = {navigation} 
+          route={route}
+          setAnimationType = {this.setAnimationType}
+          setNotePosition = {this.setNotePosition}
+      />
     }
 
     noteCreation=({navigation,route})=>{
-      return <NoteCreationPage navigation={navigation} route={route}/>
+      return <NoteCreationPage 
+        navigation={navigation} 
+        route={route}
+        getAnimationType = {this.getAnimationType}
+      />
     }
 
 
@@ -184,33 +201,128 @@ export default class DrawerNavigator extends React.Component{
       )
     }
 
-    getRoute= ({route})=>{
-      return route;
+    //get animationType set when switch scenes
+    //a tacky implementation ,but ehh..
+    setAnimationType=(x)=>{
+      this.setState({animationType: x});
+    }
+
+    //get position of touched note
+    setNotePosition =(x,y) =>{
+      this.setState({notePositionX:x,notePositionY:y});
+    }
+
+    //create animations
+    goToNoteCreationAni = () => {
+      return{
+        cardStyleInterpolator: ({current})=>{
+          const translateY = current.progress.interpolate({
+            inputRange: [0,1],
+            outputRange: [1000,0],
+          });
+  
+          const animateRadius = current.progress.interpolate({
+            inputRange: [0,1],
+            outputRange: [50,0],
+          });
+
+          const scale = current.progress.interpolate({
+            inputRange: [0, 0.9, 1],
+            outputRange: [0, 0.8, 1],
+          });
+  
+          return {
+            containerStyle: {
+              transform: [{scale},{translateY}],
+              opacity: current.progress,
+              borderRadius: animateRadius,
+              overflow: 'hidden'
+            },
+          }
+        }
+      }
+    };
+
+    goToNoteAni = () => {
+      // console.log(this.state.notePositionX+ " "+this.state.notePositionY)
+      return{
+        cardStyleInterpolator: ({current})=>{
+          
+          let translateXFurther = 0;
+          let translateXLessFurther = 0;
+          let translateYFurther = 0;
+          let translateYLessFurther = 0;
+
+          //get center first
+          const centerX = deviceWidth/2;
+          const centerY = deviceHeight/2;
+          
+          //component layout positioned differently than translate transform position
+          //have to recalculate
+          if(this.state.notePositionX<centerX){
+            translateXFurther = (this.state.notePositionX-centerX)-300;
+          }
+          else{
+            translateXFurther = (this.state.notePositionX-centerY)+500;
+          }
+
+                    
+          if(this.state.notePositionY<centerY){
+            translateYFurther = (this.state.notePositionY-centerY)+1.2*(this.state.notePositionY-centerY);
+            // console.log("above "+translateYFurther)
+          }
+          else{
+            translateYFurther = (this.state.notePositionY-centerY)+2*this.state.notePositionY;
+            // console.log("below "+translateYFurther)
+          }
+  
+          const animateRadius = current.progress.interpolate({
+            inputRange: [0,1],
+            outputRange: [300,0],
+          });
+
+          const scale = current.progress.interpolate({
+            inputRange: [0,0.9,1],
+            outputRange: [0,0.7,1],
+          });
+
+          const translateY = current.progress.interpolate({
+            inputRange: [0,1],
+            outputRange: [translateYFurther,0],
+          });
+
+
+          const translateX= current.progress.interpolate({
+            inputRange: [0,1],
+            outputRange: [translateXFurther,0],
+          });
+  
+          return {
+            containerStyle: {
+              transform: [{scale},{translateY},{translateX}],
+              opacity: current.progress,
+              borderRadius: animateRadius,
+              overflow: 'hidden',
+              justifyContent: 'center'
+            },
+            overlayStyle:{
+              opacity: 0,
+              transform: [{scale},{translateY},{translateX}],
+            }
+          }
+        }
+      }
+    };
+
+    selectAnimation=(x)=>{
+      return{
+        goToNoteCreation: this.goToNoteCreationAni,
+        goToNote: this.goToNoteAni,
+        "": null
+      }[x];
     }
 
     render(){ 
-      const { route } = this.props;
-      const goToNoteCreationAni = ({ current,layouts }) => {
-        const translateY = current.progress.interpolate({
-          inputRange: [0,1],
-          outputRange: [800,0],
-        });
-
-        const animateRadius = current.progress.interpolate({
-          inputRange: [0,1],
-          outputRange: [300,0],
-        });
-
-        return {
-          cardStyle: {
-            transform: [{scale: current.progress},{translateY}],
-            opacity: current.progress,
-            borderRadius: animateRadius,
-            overflow: 'hidden'
-        },
-        }
-        
-      };
 
       return(
         // mode='modal'
@@ -227,7 +339,7 @@ export default class DrawerNavigator extends React.Component{
             <Stack.Screen 
               name="noteCreation" 
               component={this.noteCreation}
-              options={{ cardStyleInterpolator: (goToNoteCreationAni) }}
+              options={ this.selectAnimation(this.state.animationType) }
             />
           </Stack.Navigator>
         </NavigationContainer>

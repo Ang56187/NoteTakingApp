@@ -9,11 +9,13 @@ import CheckBoxTextInput from '../components/note-component/CheckBoxTextInput'
 import PointerTextInput from '../components/note-component/PointerTextInput'
 import Note from '../objects/Note'
 import  * as SQLite from 'expo-sqlite';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, ThemeProvider } from '@react-navigation/native';
 
 
 const backgroundColor = '#21B2F2';
 const deviceWidth = Math.round(Dimensions.get('window').width);
+const deviceHeight = Math.round(Dimensions.get('window').height);
+
 const db = SQLite.openDatabase("db.db");
 
 
@@ -61,7 +63,6 @@ export default class NoteCreationPage extends React.Component{
     }
 
     //for adding/removing components
-
     //callback after animation to add component is done
     afterAnimationComplete = () =>{
         //add arr index by 1
@@ -237,7 +238,7 @@ export default class NoteCreationPage extends React.Component{
 
     render(){
         return(
-            <View style={styles.container}>
+            <Animated.View style={styles.container}>
                 <View style = {{
                             backgroundColor: this.state.backColor,
                             position: 'absolute',
@@ -385,7 +386,7 @@ export default class NoteCreationPage extends React.Component{
                         disabled = {this.state.disabled}
                     />
                 </View>
-            </View>
+            </Animated.View>
         );
  
     }
