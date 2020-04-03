@@ -7,29 +7,23 @@ export default class NoteTile extends React.Component{
         super(props);
         this.state={
             positionX: 0,
-            positionY:0
+            positionY:0,
+            title: this.props.item.title
         }
         this.animateOpacity = new Animated.Value(0);
         this.animateScale = new Animated.Value(0);
         this.animateY = new Animated.Value(0);
 
     }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        if (nextProps.item.id !== this.props.item.id) {
-          return true;
-        }
-        return false;
-      }
     
     componentDidMount(){
-        const ani1 = Animated.timing(this.animateOpacity,{duration: 400+this.props.item.id*15, toValue:1,useNativeDriver: true});
+        const ani1 = Animated.timing(this.animateOpacity,{duration: 300+this.props.item.id*15, toValue:1,useNativeDriver: true});
 
         const ani2 = Animated.timing(this.animateScale,{duration:300+this.props.item.id*15, toValue: 1.05,useNativeDriver: true});
         const ani2A = Animated.timing(this.animateScale,{duration:200+this.props.item.id*15, toValue: 1,useNativeDriver: true});
 
-        const ani3 = Animated.timing(this.animateY,{duration:300+this.props.item.id*15, toValue: 10,useNativeDriver: true});
-        const ani3A = Animated.timing(this.animateY,{duration:200+this.props.item.id*15, toValue: 0,useNativeDriver: true});
+        const ani3 = Animated.timing(this.animateY,{duration:200+this.props.item.id*15, toValue: 5,useNativeDriver: true});
+        const ani3A = Animated.timing(this.animateY,{duration:100+this.props.item.id*15, toValue: 0,useNativeDriver: true});
 
         Animated.parallel([ani1,Animated.sequence([ani2,ani2A]),Animated.sequence([ani3,ani3A])]).start();
     }
@@ -44,8 +38,10 @@ export default class NoteTile extends React.Component{
     //     });
     // }
 
-
     render(){
+        //wont change
+        // console.log(this.state.title)
+
         return(
             //TODO
             //later change onPress after done note display page
@@ -58,12 +54,12 @@ export default class NoteTile extends React.Component{
                 activeOpacity={0.8}
                 onPress={()=>{
                     this.touchNote.measure((fx, fy, width, height, px, py)=>{
-                        // console.log("position y" + py)
-                        // console.log("position x" + px)
                         this.props.setNotePosition(px,py);
                         setTimeout(()=>{
                             this.props.setAnimationType("goToNote");
-                            this.props.navigation.navigate('noteCreation');
+                            this.props.navigation.navigate('noteDisplay',{
+                                note: this.props.item
+                            });
                         },60)
                     });
                 }}

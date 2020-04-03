@@ -7,6 +7,7 @@ import React,{Component} from 'react';
 import { StyleSheet,View,Text,TouchableOpacity,Dimensions } from 'react-native';
 import MainWrapper from '../scenes/MainWrapper';
 import NoteCreationPage from '../scenes/NoteCreationPage';
+import NoteDisplayPage from '../scenes/NoteDisplayPage';
 import Animated from 'react-native-reanimated';
 import {LinearGradient} from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -182,6 +183,14 @@ export default class DrawerNavigator extends React.Component{
       />
     }
 
+    noteDisplay=({navigation,route})=>{
+      return <NoteDisplayPage 
+        navigation={navigation} 
+        route={route}
+        getAnimationType = {this.getAnimationType}
+      />
+    }
+
 
     mainPage=({navigation})=>{
       return(
@@ -244,7 +253,6 @@ export default class DrawerNavigator extends React.Component{
     };
 
     goToNoteAni = () => {
-      // console.log(this.state.notePositionX+ " "+this.state.notePositionY)
       return{
         cardStyleInterpolator: ({current})=>{
           
@@ -269,11 +277,9 @@ export default class DrawerNavigator extends React.Component{
                     
           if(this.state.notePositionY<centerY){
             translateYFurther = (this.state.notePositionY-centerY)+1.2*(this.state.notePositionY-centerY);
-            // console.log("above "+translateYFurther)
           }
           else{
             translateYFurther = (this.state.notePositionY-centerY)+2*this.state.notePositionY;
-            // console.log("below "+translateYFurther)
           }
   
           const animateRadius = current.progress.interpolate({
@@ -339,6 +345,11 @@ export default class DrawerNavigator extends React.Component{
             <Stack.Screen 
               name="noteCreation" 
               component={this.noteCreation}
+              options={ this.selectAnimation(this.state.animationType) }
+            />
+            <Stack.Screen 
+              name="noteDisplay" 
+              component={this.noteDisplay}
               options={ this.selectAnimation(this.state.animationType) }
             />
           </Stack.Navigator>

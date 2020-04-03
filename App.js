@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import MainWrapper from './src/scenes/MainWrapper';
 import DrawerNavigator from './src/components/DrawerNavigator'
-import NoteCreationPage from './src/scenes/NoteCreationPage'
+import NoteDisplayPage from './src/scenes/NoteDisplayPage'
 import  * as SQLite from 'expo-sqlite';
 
 //essential sql commands
@@ -24,11 +24,11 @@ export default function App() {
       'contentID INTEGER NOT NULL PRIMARY KEY, noteType TEXT, isChecked integer,content LONGTEXT,'+
       'noteID INTEGER REFERENCES notes(id))',[],(_,ResultSet)=>{},
       (_,error)=>{console.log(error)})
-    // tx.executeSql('drop table notes',[],(_,ResultSet)=>{console.log(ResultSet)},
+    // tx.executeSql('select * from noteContent',[],(_,ResultSet)=>{console.log(ResultSet.rows)},
     // (_,error)=>{console.log(error)})
   });
   return (
     <DrawerNavigator/>
-    // <NoteCreationPage/>
+    // <NoteDisplayPage/>
   );
 }

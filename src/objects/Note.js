@@ -1,8 +1,8 @@
 export default class Note {
-    constructor(id,title,content,dateTime,isFavourited,backColor,textColor){
+    constructor(id,title,firstNote,dateTime,isFavourited,backColor,textColor){
         this._id=id;
         this._title=title;
-        this._content=content;
+        this._firstNote=firstNote;
         this._dateTime=dateTime;
         this._isFavourited=isFavourited;
         this._backColor=backColor;
@@ -26,11 +26,11 @@ export default class Note {
     }
 
     //content setter getter
-    get content(){
-        return this._content;
+    get firstNote(){
+        return this._firstNote;
     }
-    set content(x){
-        this._content=x;
+    set firstNote(x){
+        this._firstNote=x;
     }
 
     //dateTime setter getter
@@ -69,5 +69,13 @@ export default class Note {
         if(typeof x === 'string'){
             this._textColor = x;
         }
+    }
+
+    get content(){
+        return this._content;
+    }
+
+    set content(x){
+        this._content=x;
     }
 }

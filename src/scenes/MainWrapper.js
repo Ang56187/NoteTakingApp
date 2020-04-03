@@ -15,15 +15,6 @@ import  * as SQLite from 'expo-sqlite';
 //variables
 let filteredNotes = [];
 
-//wrapped around class component so it can actually receive hooks
-//also onyl way to update noteTitles
-//(due to only restricted to functions)
-
-// const MainWrapperHook = (props) => {  
-//     return <MainWrapper
-//         navigation={props.navigation} route={props.route} getAnimationType={props.getAnimationType}/>
-// }
-
 const db = SQLite.openDatabase('db.db');
 
 
@@ -68,7 +59,6 @@ export default class MainWrapper extends React.Component{
         });  
 
         const switchToThisScreen = this.props.navigation.addListener('focus',()=>{
-            // console.log("it works")
             //console log printed, means it worked,
             // now to make it update note list
             db.transaction(tx=>{
@@ -84,23 +74,42 @@ export default class MainWrapper extends React.Component{
                         const hour = e.dateTime.substring(11,13)
                         const minute = e.dateTime.substring(14,16)
                         const second = e.dateTime.substring(17,19)
-                        const date = (new Date(year,month,day,hour,minute,second).toLocaleString())
-                        dupeArr.push(new Note(
-                        index,e.title,"add later",date,false,
-                        e.backColor,e.textColor));
-                        index++;
-                    })
+                        const date = (new Date(year,month,day,hour,minute,second).toLocaleString());
+    
+    
+                        let newNote = new Note(e.id,e.title,e.firstNote,date,(e.isFavourited===1?true:false),
+                        e.backColor,e.textColor)
+    
+                        let dupeComponentArr = [];
+    
+                        tx.executeSql('select * from noteContent where noteID = ?',[e.id],
+                        (_,{rows:{_array}})=>{
+                            _array.forEach(e=>{
+                                let component={
+                                    id : e.contentID,
+                                    noteType : e.noteType,
+                                    text : e.content,
+                                    isChecked : (e.isChecked === 1 ? true : false),
+                                    noteID : e.noteID}
+                                dupeComponentArr.push(component)
+                                // console.log(component.noteType+' '+component.isChecked)
+                            })//end inner foreach
+                            newNote.content = dupeComponentArr;
+                        })//end inner sql
+                        dupeArr.push(newNote);
+                    })//end for each
                     this.setState({
                         noteTitles: dupeArr,
-                        dupeNoteTitles: dupeArr 
+                        dupeNoteTitles: dupeArr
+                    },()=>{
+                        // console.log(this.state.noteTitles)
                     });
                 },
                 (_,error)=>{console.log(error)})
             })
         })
 
-
-    }
+    }//end constructor
 
     componentDidMount(){
         db.transaction(tx=>{
@@ -116,16 +125,34 @@ export default class MainWrapper extends React.Component{
                     const hour = e.dateTime.substring(11,13)
                     const minute = e.dateTime.substring(14,16)
                     const second = e.dateTime.substring(17,19)
-                    const date = (new Date(year,month,day,hour,minute,second).toLocaleString())
-                    dupeArr.push(new Note(
-                    index,e.title,"add later",date,false,
-                    e.backColor,e.textColor));
-                    index++;
-                })
+                    const date = (new Date(year,month,day,hour,minute,second).toLocaleString());
+
+
+                    let newNote = new Note(e.id,e.title,e.firstNote,date,(e.isFavourited===1?true:false),
+                    e.backColor,e.textColor)
+
+                    let dupeComponentArr = [];
+
+                    tx.executeSql('select * from noteContent where noteID = ?',[e.id],
+                    (_,{rows:{_array}})=>{
+                        _array.forEach(e=>{
+                            let component={
+                                id : e.contentID,
+                                noteType : e.noteType,
+                                text : e.content,
+                                isChecked : (e.isChecked===1?true:false),
+                                noteID : e.noteID}
+                            dupeComponentArr.push(component)
+                        })//end inner foreach
+                        newNote.content = dupeComponentArr;
+                    })//end inner sql
+                    dupeArr.push(newNote);
+                })//end for each
                 this.setState({
                     noteTitles: dupeArr,
                     dupeNoteTitles: dupeArr 
                 });
+
             },
             (_,error)=>{console.log(error)})
         })
@@ -187,7 +214,6 @@ export default class MainWrapper extends React.Component{
 
     //where actual components were rendered
     render(){
-
         // open drawer when click btn
         if(this.state.onClickedHamburgerBtn){
             this.props.navigation.openDrawer();

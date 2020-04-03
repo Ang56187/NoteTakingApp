@@ -27,8 +27,8 @@ class HeaderBar extends React.Component{
             }
         }
         return StyleSheet.flatten([styleButton,{
-            height:40,
-            width:40,
+            height:35,
+            width:35,
             marginLeft: 4,
             borderRadius:20,
             justifyContent:'center',
@@ -53,7 +53,7 @@ class HeaderBar extends React.Component{
 
     animateSearchBtn = (x) =>{
         if(x){
-            const ani1 = Animated.timing(this.state.animateViewX,{toValue: -52,duration: 450
+            const ani1 = Animated.timing(this.state.animateViewX,{toValue: -47,duration: 450
                 ,easing:Easing.out(Easing.ease)});
             const ani2 = Animated.timing(this.state.animateSearchOpacity,{toValue: 0,duration: 400
                 ,easing:Easing.out(Easing.ease)});
@@ -91,7 +91,7 @@ class HeaderBar extends React.Component{
                 opacity: 0.9,
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                maxHeight: 50,
+                maxHeight: 45,
                 overflow: 'hidden'
             }}>
                 {/* Menu button at left */}
@@ -102,7 +102,7 @@ class HeaderBar extends React.Component{
                     icon = {
                     <Icon
                         name= {"md-menu"} 
-                        size = {35} 
+                        size = {30} 
                         style = {_styleHamburgerIcon}
                     /> 
                 }
@@ -120,7 +120,7 @@ class HeaderBar extends React.Component{
                         ref={search => this.search = search}
                         value = {this.props.search}
                         onChangeText = {this.props.handleSearch}     
-                        containerStyle = {{height: 40, justifyContent: 'center',borderRadius: 20}}           
+                        containerStyle = {{height: 35, justifyContent: 'center',borderRadius: 20}}           
                     />
                 </Animated.View>
 
@@ -144,7 +144,7 @@ class HeaderBar extends React.Component{
                             icon = {
                             <Icon
                                 name= {"md-close-circle-outline"} 
-                                size = {35} 
+                                size = {30} 
                                 style = {{color: '#ffffff'}}
                             /> 
                         }
@@ -169,7 +169,7 @@ class HeaderBar extends React.Component{
                             icon = {
                             <Icon
                                 name= {"md-search"} 
-                                size = {35} 
+                                size = {30} 
                                 style = {{color: '#ffffff'}}
                             /> 
                         }

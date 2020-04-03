@@ -1,23 +1,24 @@
 import React,{Component} from 'react';
-import {View,StyleSheet,TextInput,TouchableOpacity,Animated} from 'react-native';
+import {View,StyleSheet,TextInput,TouchableOpacity,Animated, Alert} from 'react-native';
 import {CheckBox,Button,Icon} from 'react-native-elements';
 import { ThemeProvider } from '@react-navigation/native';
+import  * as SQLite from 'expo-sqlite';
 
-
-//TODO 
+//TODO
 // after done note creation, implement editable prop to disable edits on normal notes
+
+const db = SQLite.openDatabase('db.db');
+
 
 export default class CheckBoxTextInput extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            isChecked: false,
+            isChecked: (this.props.editable ? false : this.props.ele.isChecked),
             textInput: '',
             textInputHeight: new Animated.Value(50)
         }
-
         this.animateXAsMount = new Animated.Value(0);
-
     }
 
     //check if component should update
@@ -39,7 +40,7 @@ export default class CheckBoxTextInput extends React.Component{
                 duration:250,
                 useNativeDriver: true
             }
-        ).start(()=>{this.props.afterAnimationComplete()});
+        ).start(()=>{(this.props.editable ? this.props.afterAnimationComplete(): null)});
     }
 
     removeItem =()=>{
@@ -61,8 +62,24 @@ export default class CheckBoxTextInput extends React.Component{
         }
     }
 
-    render(){
+    //used in case that 
+    handleIsChecked(){
+        this.setState({isChecked: !this.state.isChecked},()=>{
+            // console.log('pressed'+ " "+this.state.isChecked)
+            //save to database
+            db.transaction(tx=>{
+                tx.executeSql('update noteContent set isChecked = ? where contentID = ?',
+                [(this.state.isChecked?1:0),this.props.ele.id],
+                (_,ResultSet)=>{
+                }),
+                (_,error)=>{
+                    Alert.alert('trouble updating checkbox.\nPlease try again')
+                }
+            })
+        })
+    }
 
+    render(){
         const translateAnimate= this.animateXAsMount.interpolate({
             inputRange: [0,1],
             outputRange: [-this.props.width,this.props.width]
@@ -83,7 +100,9 @@ export default class CheckBoxTextInput extends React.Component{
                 <CheckBox
                     size={29}
                     checked= {this.state.isChecked}
-                    onPress = {()=>{this.setState({isChecked : ! this.state.isChecked})}}
+                    onPress = {()=>{
+                        (this.props.editable ? this.setState({isChecked : ! this.state.isChecked}) : this.handleIsChecked())
+                    }}
                     containerStyle = {{padding: 0,top: 5}}
                     iconType = 'ionicon'
                     checkedIcon = 'md-checkbox'
@@ -96,12 +115,14 @@ export default class CheckBoxTextInput extends React.Component{
                     <TextInput
                         multiline
                         style={StyleSheet.flatten([styles.textInputStyle,{
-                            width: (this.props.width-70-20),
+                            width: (this.props.editable ? (this.props.width-70-20) : (this.props.width-35-20)),
                             color: this.props.textColor,
                             backgroundColor: this.props.lighterBackColor,
                             left: -5,
                             padding: 5,
-                            borderColor: this.props.lighterBorderColor,
+                            borderColor: (this.props.editable ? this.props.lighterBorderColor: null),
+                            borderBottomWidth: (this.props.editable ? 1: 0),
+                            marginRight: (!this.props.editable ? 15 : 0)                        
                         }])}
                         autoCorrect= {false}
                         onContentSizeChange={e=>{this.handleTextInputHeight(e)}}
@@ -110,21 +131,23 @@ export default class CheckBoxTextInput extends React.Component{
                             this.props.handleUpdateNoteText(this.props.ele.id,text);
                         }}
                         value = {this.state.textInput}
+                        editable = {this.props.editable}
                     />
                 </Animated.View>
 
-
-                <TouchableOpacity 
-                    style={{paddingHorizontal: 10,top: 10}}
-                    onPress={this.removeItem}
-                >                 
-                    <Icon
-                        type='ionicon'
-                        name= {"md-close"} 
-                        size = {29} 
-                        color = {'#ffffff'}
-                    />
-                </TouchableOpacity>
+                {this.props.editable ?
+                    <TouchableOpacity 
+                        style={{paddingHorizontal: 10,top: 10}}
+                        onPress={this.removeItem}
+                    >                 
+                        <Icon
+                            type='ionicon'
+                            name= {"md-close"} 
+                            size = {29} 
+                            color = {'#ffffff'}
+                        />
+                    </TouchableOpacity> : null
+                }
  
             </Animated.View>
         );
@@ -135,7 +158,6 @@ const styles = StyleSheet.create({
     textInputStyle:{
         //style of box itself
         borderRadius: 5,
-        borderBottomWidth: 1,
         marginTop: 5,
         marginBottom:5,
         //style of text inserted

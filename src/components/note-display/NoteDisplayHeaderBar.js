@@ -1,13 +1,19 @@
+import  * as SQLite from 'expo-sqlite';
 import React,{Component} from 'react';
-import { StyleSheet,View,Text } from 'react-native';
-import {Button} from 'react-native-elements';
+import Constants from 'expo-constants';
+import color from 'color';
+import { StyleSheet,View,Dimensions,Text, Animated , UIManager, LayoutAnimation} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'
 import { StackActions } from '@react-navigation/native';
-import  * as SQLite from 'expo-sqlite';
-import Note from '../../objects/Note'
+import {Button} from 'react-native-elements';
 
+//TODO 
+//add gesture support later
 
-export default class NoteHeaderBar extends React.Component{
+const deviceWidth = Math.round(Dimensions.get('window').width);
+const deviceHeight = Math.round(Dimensions.get('window').height);
+
+export default class NoteDisplayHeaderBar extends React.Component{
     render(){
         return(
             <View style = {styles.container}>
@@ -26,18 +32,15 @@ export default class NoteHeaderBar extends React.Component{
                     />  
                     }
                 />
-                {/* Text to be shown in mid, says Note creation */}
-                <Text style={styles.textStyle}>Note creation</Text>
                 {/* Save the note created */}
                 <Button
                     type = "clear" 
                     onPress={() =>{
-                        this.props.handleSaveNote()
                     }}
                     icon = {
                     <Icon
-                        name= {"md-save"} 
-                        size = {30} 
+                        name= {"md-create"} 
+                        size = {28} 
                         style = {{color: 'white'}}
                     />  
                     }
@@ -55,10 +58,5 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'space-between',
-    },
-    textStyle:{
-        fontSize: 26,
-        color: 'white',
-        fontFamily: 'sans-serif-light'
     }
 });

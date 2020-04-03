@@ -4,7 +4,6 @@ import {CheckBox,Button,Icon} from 'react-native-elements';
 import { ThemeProvider } from '@react-navigation/native';
 
 
-
 export default class PointerTextInput extends React.Component{
     constructor(props){
         super(props);
@@ -36,7 +35,7 @@ export default class PointerTextInput extends React.Component{
                 duration:250,
                 useNativeDriver: true
             }
-        ).start(()=>{this.props.afterAnimationComplete()});
+        ).start(()=>{(this.props.editable ? this.props.afterAnimationComplete(): null)});
     }
 
     removeItem =()=>{
@@ -84,17 +83,20 @@ export default class PointerTextInput extends React.Component{
                         height: 15,
                         backgroundColor: '#ffffff',
                         margin: 13,
+                        marginRight:16
                     }}
                 />
                 <Animated.View style={{height: this.state.textInputHeight}}>
                     <TextInput
                         multiline
                         style={StyleSheet.flatten([styles.textInputStyle,{
-                            width: (this.props.width-70-20),
+                            width: (this.props.editable ? (this.props.width-70-20) : (this.props.width-37-20)),
                             color: this.props.textColor,
                             backgroundColor: this.props.lighterBackColor,
                             padding: 5,
-                            borderColor: this.props.lighterBorderColor,
+                            borderColor: (this.props.editable ? this.props.lighterBorderColor: null),
+                            borderBottomWidth: (this.props.editable ? 1: 0),
+                            marginRight: (!this.props.editable ? 20 : 0)
                         }])}
                         autoCorrect= {false}
                         onContentSizeChange={e=>{this.handleTextInputHeight(e)}}
@@ -103,21 +105,24 @@ export default class PointerTextInput extends React.Component{
                             this.props.handleUpdateNoteText(this.props.ele.id,text);
                         }}
                         value = {this.state.textInput}
+                        editable = {this.props.editable}
                     />
                 </Animated.View>
 
 
-                <TouchableOpacity 
-                    style={{paddingHorizontal: 10,top: 10}}
-                    onPress={this.removeItem}
-                >                 
-                    <Icon
-                        type='ionicon'
-                        name= {"md-close"} 
-                        size = {29} 
-                        color = {'#ffffff'}
-                    />
-                </TouchableOpacity>
+                {this.props.editable ?
+                    <TouchableOpacity 
+                        style={{paddingHorizontal: 10,top: 10}}
+                        onPress={this.removeItem}
+                    >                 
+                        <Icon
+                            type='ionicon'
+                            name= {"md-close"} 
+                            size = {29} 
+                            color = {'#ffffff'}
+                        />
+                    </TouchableOpacity> : null
+                }
  
             </Animated.View>
         );
@@ -128,7 +133,6 @@ const styles = StyleSheet.create({
     textInputStyle:{
         //style of box itself
         borderRadius: 5,
-        borderBottomWidth: 1,
         marginTop: 5,
         marginBottom:5,
         //style of text inserted

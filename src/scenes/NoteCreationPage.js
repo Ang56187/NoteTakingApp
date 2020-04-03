@@ -76,7 +76,7 @@ export default class NoteCreationPage extends React.Component{
             //TODO
             //figure out how to save text too
             //newValue.type and text to be saved in note obj later as content
-            const newValue = {id: this.index,type: eleType,text: '',isChecked: null}
+            const newValue = {id: this.index,type: eleType,text: '',isChecked: false}
 
             this.setState({
                 //disable button so it wont create new component,
@@ -216,6 +216,7 @@ export default class NoteCreationPage extends React.Component{
                 tx.executeSql('insert into notes(noteNum,title,firstNote,dateTime,isFavourited,backColor,textColor)'+
                 'values(?,?,?,?,?,?,?)',
                 [noteNum,this.state.titleTextInput,this.state.textInput,dateTime,0,this.state.backColor,this.state.textColor],
+                //success
                 (_,ResultSet)=>{console.log(ResultSet)},(_,error)=>{console.log(error)}),
                 tx.executeSql('select id from notes where noteNum = ?',[noteNum],
                 (_,{rows:{_array}})=>{
@@ -224,12 +225,13 @@ export default class NoteCreationPage extends React.Component{
                         dupeArr.forEach(ele=>{
                             tx.executeSql('insert into noteContent (noteType,content,isChecked,noteID)'+
                             'values(?,?,?,?)',
-                            [ele.type,ele.text,(ele.isChecked==null ? null : ele.isChecked),e.id],
+                            [ele.type,ele.text,(ele.isChecked ? 1 : 0),e.id],
                             (_,ResultSet)=>{console.log(ResultSet)},
                             (_,error)=>{console.log(error)})            
                         });
                     })
                 },
+                //fail
                 (_,error)=>{console.log(error)})
             })
             this.props.navigation.navigate('home')
@@ -416,7 +418,7 @@ const styles = StyleSheet.create({
         padding: 5
     },
     textLabelStyle:{
-        fontSize: 20,
+        fontSize: 22,
         color: 'white',
         fontFamily: 'sans-serif-light',
         alignSelf: 'flex-start',
