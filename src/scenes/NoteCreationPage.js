@@ -244,7 +244,7 @@ export default class NoteCreationPage extends React.Component{
                             tx.executeSql('insert into noteContent (noteType,content,isChecked,noteID)'+
                             'values(?,?,?,?)',
                             [ele.type,ele.text,(ele.isChecked ? 1 : 0),e.id],
-                            (_,ResultSet)=>{console.log(ResultSet)},
+                            (_,{rows})=>{console.log(rows)},
                             (_,error)=>{console.log(error)})            
                         });
                     })
