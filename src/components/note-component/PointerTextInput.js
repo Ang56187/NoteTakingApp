@@ -9,7 +9,8 @@ export default class PointerTextInput extends React.Component{
         super(props);
         this.state = {
             textInput: this.props.ele.text,
-            textInputHeight: new Animated.Value(50)
+            textInputHeight: new Animated.Value(50),
+            animateBorderWidth: new Animated.Value(0)
         }
 
         this.animateXAsMount = new Animated.Value(0);
@@ -86,18 +87,28 @@ export default class PointerTextInput extends React.Component{
                         marginRight:16
                     }}
                 />
-                <Animated.View style={{height: this.state.textInputHeight}}>
+                <Animated.View style={[styles.textInputViewStyle,{
+                        width: (this.props.editable ? (this.props.width-70-20) : (this.props.width-37-20)),
+                        height: this.state.textInputHeight,
+                        padding: 5,
+                        borderColor: (this.props.editable ? this.props.lighterBorderColor: null),
+                        borderBottomWidth: (this.props.editable ? this.state.animateBorderWidth: 0),
+                        marginRight: (!this.props.editable ? 10 : 0),
+                        backgroundColor: this.props.lighterBackColor,
+                    }]}>
                     <TextInput
                         multiline
                         style={StyleSheet.flatten([styles.textInputStyle,{
-                            width: (this.props.editable ? (this.props.width-70-20) : (this.props.width-37-20)),
                             color: this.props.textColor,
-                            backgroundColor: this.props.lighterBackColor,
-                            padding: 5,
-                            borderColor: (this.props.editable ? this.props.lighterBorderColor: null),
-                            borderBottomWidth: (this.props.editable ? 1: 0),
-                            marginRight: (!this.props.editable ? 20 : 0)
                         }])}
+                        onFocus = {()=>{
+                            const ani1 = Animated.timing(this.state.animateBorderWidth,{duration:300,toValue:2});
+                            const ani2 = Animated.timing(this.state.animateBorderWidth,{duration:300,toValue:1})
+                            Animated.sequence([ani1,ani2]).start();
+                        }}
+                        onBlur = {()=>{
+                            Animated.timing(this.state.animateBorderWidth,{duration:300,toValue: 0}).start();
+                        }}
                         autoCorrect= {false}
                         onContentSizeChange={e=>{this.handleTextInputHeight(e)}}
                         onChangeText={text=> {
@@ -130,15 +141,16 @@ export default class PointerTextInput extends React.Component{
 }
 
 const styles = StyleSheet.create({
-    textInputStyle:{
+    textInputViewStyle:{
         //style of box itself
         borderRadius: 5,
         marginTop: 5,
         marginBottom:5,
+    },
+    textInputStyle:{
         //style of text inserted
         fontSize: 17,
         fontFamily: 'sans-serif',
-        padding: 10
     },
 
   });  

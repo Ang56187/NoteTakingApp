@@ -101,8 +101,6 @@ export default class MainWrapper extends React.Component{
                     this.setState({
                         noteTitles: dupeArr,
                         dupeNoteTitles: dupeArr
-                    },()=>{
-                        // console.log(this.state.noteTitles)
                     });
                 },
                 (_,error)=>{console.log(error)})

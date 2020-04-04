@@ -8,12 +8,18 @@ export default class NoteTile extends React.Component{
         this.state={
             positionX: 0,
             positionY:0,
-            title: this.props.item.title
         }
         this.animateOpacity = new Animated.Value(0);
         this.animateScale = new Animated.Value(0);
         this.animateY = new Animated.Value(0);
+    }
 
+    //only render changes when needed
+    shouldComponentUpdate(prevProps,prevState){
+        if(prevProps.title !== this.props.title){
+            return true;
+        }
+        return false
     }
     
     componentDidMount(){
@@ -39,8 +45,6 @@ export default class NoteTile extends React.Component{
     // }
 
     render(){
-        //wont change
-        // console.log(this.state.title)
 
         return(
             //TODO

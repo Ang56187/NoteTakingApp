@@ -19,7 +19,6 @@ export default class ScrollViewNotes extends React.Component{
             view1Height: 0,
             view2Height: 0,
             view1X: 0,
-            noteTitles: this.props.noteTitles,
             view2X: 0
        };
 
@@ -28,11 +27,7 @@ export default class ScrollViewNotes extends React.Component{
 
     }
 
-    // static getDerivedStateFromProps(nextProps, prevState) {
-    //     if(nextProps.noteTitles !== prevState.noteTitles ) {
-    //       return {stateFoo: 'valueBar'};
-    //     }
-    //   }
+
 
     //mount all the notes
     componentDidMount(){
@@ -96,9 +91,6 @@ export default class ScrollViewNotes extends React.Component{
     }
 
     render(){
-        // this.props.noteTitles.forEach(e=>{
-        //     console.log(e.title)
-        // })
         //split to 2 array
         //concentrate all long titles to middle
         this.newArr = this.props.noteTitles.sort(

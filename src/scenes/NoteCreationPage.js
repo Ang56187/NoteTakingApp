@@ -37,6 +37,11 @@ export default class NoteCreationPage extends React.Component{
             //for text color setting
             textColor: '#ffffff',
 
+            //for on focus animation
+            animateTitleBorderWidth: new Animated.Value(0),
+            animateBorderWidth: new Animated.Value(0),
+
+
             //for storing checkboxes/options/notifications/normal text..
             componentArr: [],
             disabled: false,
@@ -160,6 +165,19 @@ export default class NoteCreationPage extends React.Component{
         this.setState({textColor: color});
     }
 
+    //animate on focus onto textinput
+    handleExpandBorderWidth(expandWidth){
+        const ani1 = Animated.timing(expandWidth,{duration: 300, toValue: 2});
+        const ani2 = Animated.timing(expandWidth,{duration: 300, toValue: 1});
+        return Animated.sequence([ani1,ani2]).start();
+    }
+
+    //animate on focus onto textinput
+    handleShrinkBorderWidth(shrinkWidth){
+        Animated.timing(shrinkWidth,{duration: 300, toValue: 0}).start();
+    }
+
+    //here is the section where contain function whose job is to ensure note were saved correctly
     addZero(x,isDate){
         if(isDate == null){
             isDate = true;
@@ -269,7 +287,13 @@ export default class NoteCreationPage extends React.Component{
                             {/* label to show text "title" */}
                             <Text style={styles.textLabelStyle}>Title</Text>
                             {/* Text input for title */}
-                            <Animated.View style={{ height: this.state.titleTextInputHeight }}>
+                            <Animated.View style={[styles.textInputViewStyle,{ 
+                                height: this.state.titleTextInputHeight,
+                                backgroundColor: this.state.lighterBackColor,
+                                borderColor: this.state.lighterBorderColor,
+                                borderBottomWidth: this.state.animateTitleBorderWidth,
+                            }]}>
+
                                 <TextInput
                                     multiline
                                     maxLength = {100}
@@ -277,10 +301,13 @@ export default class NoteCreationPage extends React.Component{
                                     autoCorrect= {false}
                                     style={StyleSheet.flatten([styles.textInputStyle,{
                                         color: this.state.textColor,
-                                        backgroundColor: this.state.lighterBackColor,
-                                        borderColor: this.state.lighterBorderColor,
-
                                     }])}
+                                    onFocus={()=>{
+                                        this.handleExpandBorderWidth(this.state.animateTitleBorderWidth)
+                                    }}
+                                    onBlur={()=>{
+                                        this.handleShrinkBorderWidth(this.state.animateTitleBorderWidth)
+                                    }}
                                     onChangeText={text=> {
                                         this.setState({ titleTextInput: text });
                                         if(this.state.titleTextInput.length <= 100){
@@ -299,6 +326,7 @@ export default class NoteCreationPage extends React.Component{
                                     onContentSizeChange = {e => {this.handleTitleTextInputHeight(e);}}
                                     value = {this.state.titleTextInput}
                                 />
+
                             </Animated.View>
 
                             {/* Shown as error once reached max word count */}
@@ -317,15 +345,25 @@ export default class NoteCreationPage extends React.Component{
                             {/* label to show text "Notes list" */}
                             <Text style={styles.textLabelStyle}>Notes</Text>
                             {/* Text input for notes content(first part anyways) */}
-                            <Animated.View style={{height: this.state.textInputHeight}}>
+                            <Animated.View style={[styles.textInputViewStyle,{
+                                height: this.state.textInputHeight,
+                                borderBottomWidth: this.state.animateBorderWidth,
+                                borderColor: this.state.lighterBorderColor,
+                                backgroundColor: this.state.lighterBackColor,
+                                }]}>
+
                                 <TextInput
                                     multiline
                                     ref={(el)=>{this.firstNoteInput = el;}}
-                                    style={StyleSheet.flatten([styles.textInputStyle,{
+                                    style={[styles.textInputStyle,{                                
                                         color: this.state.textColor,
-                                        backgroundColor: this.state.lighterBackColor,
-                                        borderColor: this.state.lighterBorderColor,
-                                    }])}
+                                    }]}
+                                    onFocus={()=>{
+                                        this.handleExpandBorderWidth(this.state.animateBorderWidth)
+                                    }}
+                                    onBlur={()=>{
+                                        this.handleShrinkBorderWidth(this.state.animateBorderWidth)
+                                    }}
                                     autoCorrect= {false}
                                     onChangeText={text=> {
                                         this.setState({textInput: text});
@@ -335,8 +373,10 @@ export default class NoteCreationPage extends React.Component{
                                     }}
                                     value = {this.state.textInput}
                                 />
+
                             </Animated.View>
 
+                            {/* get pointers/checkboxes .etc added to note and load em out */}
                             {this.state.componentArr.map(ele=>{
                                 if(ele.type === 'checkbox'){
                                     return (
@@ -405,17 +445,17 @@ const styles = StyleSheet.create({
         width: deviceWidth,
         alignItems: 'center',
     },
-    textInputStyle:{
-        //style of box itself
+    textInputViewStyle:{
         width: (deviceWidth-20),
         borderRadius: 5,
-        borderBottomWidth: 1,
         marginTop: 5,
         marginBottom:5,
+        padding: 5
+    },
+    textInputStyle:{
         //style of text inserted
         fontSize: 17,
         fontFamily: 'sans-serif',
-        padding: 5
     },
     textLabelStyle:{
         fontSize: 22,
