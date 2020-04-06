@@ -66,6 +66,15 @@ export default class NoteCreationPage extends React.Component{
         this.afterAnimationComplete = this.afterAnimationComplete.bind(this);
         this.handleSaveNote = this.handleSaveNote.bind(this);
 
+        const switchToThisScreen = this.props.navigation.addListener('focus',()=>{
+            if( this.props.route.params.prevPage === "goToNoteCreation"){
+                this.props.setAnimationType(this.props.route.params.prevPage);
+            }
+            else{
+            }
+
+        })
+
     }
 
     //for adding/removing components
@@ -251,7 +260,8 @@ export default class NoteCreationPage extends React.Component{
                 (_,error)=>{console.log(error)})
             })
             //end db transaction
-            this.props.navigation.navigate('home')
+            this.props.setAnimationType("goToNote");
+            setTimeout(()=>{this.props.navigation.navigate('home')},100);
         }
         else{   
             //heres the constructor of note

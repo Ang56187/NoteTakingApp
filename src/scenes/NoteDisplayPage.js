@@ -30,8 +30,6 @@ export default class NoteDisplayPage extends React.Component{
         }
 
         const switchToThisScreen = this.props.navigation.addListener('focus',()=>{
-            //console log printed, means it worked,
-            // now to make it update note list
             this.props.setAnimationType('goToNote');
         })
 

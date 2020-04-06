@@ -179,7 +179,7 @@ export default class DrawerNavigator extends React.Component{
       return <NoteCreationPage 
         navigation={navigation} 
         route={route}
-        getAnimationType = {this.getAnimationType}
+        setAnimationType = {this.setAnimationType}
       />
     }
 
@@ -214,6 +214,7 @@ export default class DrawerNavigator extends React.Component{
     //a tacky implementation ,but ehh..
     setAnimationType=(x)=>{
       this.setState({animationType: x});
+      // console.log(x)
     }
 
     //get position of touched note

@@ -38,7 +38,7 @@ export default class NoteDisplayHeaderBar extends React.Component{
                     onPress={() =>{
                         this.props.setAnimationType('goToNoteEdit');
                         this.props.navigation.navigate('noteCreation',{
-                            note: this.props.note
+                            note: this.props.note,
                         });
                     }}
                     icon = {

@@ -269,7 +269,8 @@ export default class MainWrapper extends React.Component{
                             //TODO
                             this.props.setAnimationType("goToNoteCreation");
                             this.props.navigation.navigate('noteCreation',{
-                                note: null
+                                note: null,
+                                prevPage: 'goToNoteCreation'
                             });
                         }
                         }
