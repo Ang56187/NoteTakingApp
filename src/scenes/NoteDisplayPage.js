@@ -29,6 +29,12 @@ export default class NoteDisplayPage extends React.Component{
             componentArr: note.content,
         }
 
+        const switchToThisScreen = this.props.navigation.addListener('focus',()=>{
+            //console log printed, means it worked,
+            // now to make it update note list
+            this.props.setAnimationType('goToNote');
+        })
+
     }
 
     render(){
@@ -49,6 +55,7 @@ export default class NoteDisplayPage extends React.Component{
                         navigation = {this.props.navigation}
                         route = {this.props.route}
                         note = {this.props.route.params.note}
+                        setAnimationType = {this.props.setAnimationType}
                     />
                         <ScrollView 
                             contentContainerStyle={styles.scrollStyle}

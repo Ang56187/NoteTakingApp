@@ -187,7 +187,7 @@ export default class DrawerNavigator extends React.Component{
       return <NoteDisplayPage 
         navigation={navigation} 
         route={route}
-        getAnimationType = {this.getAnimationType}
+        setAnimationType = {this.setAnimationType}
       />
     }
 
@@ -252,6 +252,23 @@ export default class DrawerNavigator extends React.Component{
       }
     };
 
+    goToNoteEditAni = () => {
+      return{
+        cardStyleInterpolator: ({current})=>{
+          const translateX = current.progress.interpolate({
+            inputRange: [0,1],
+            outputRange: [1000,0],
+          });
+          return {
+            containerStyle: {
+              transform: [{translateX}],
+              // opacity: current.progress,
+            },
+          }
+        }
+      }
+    };
+
     goToNoteAni = () => {
       return{
         cardStyleInterpolator: ({current})=>{
@@ -276,8 +293,7 @@ export default class DrawerNavigator extends React.Component{
 
                     
           if(this.state.notePositionY<centerY){
-            translateYFurther = (this.state.notePositionY-centerY)+(1.7*this.state.notePositionY-centerY);
-            console.log(translateYFurther)
+            translateYFurther = 3.5*(this.state.notePositionY-centerY);
           }
           else{
             translateYFurther = (this.state.notePositionY-centerY)+2*this.state.notePositionY;
@@ -325,6 +341,7 @@ export default class DrawerNavigator extends React.Component{
       return{
         goToNoteCreation: this.goToNoteCreationAni,
         goToNote: this.goToNoteAni,
+        goToNoteEdit: this.goToNoteEditAni,
         "": null
       }[animationType];
     }

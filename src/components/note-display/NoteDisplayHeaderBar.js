@@ -21,8 +21,8 @@ export default class NoteDisplayHeaderBar extends React.Component{
                 <Button
                     type = "clear" 
                     onPress={() =>{
-                        const popAction = StackActions.pop(1);
-                        this.props.navigation.dispatch(popAction);
+                        this.props.setAnimationType('goToNote');
+                        this.props.navigation.navigate('home');
                     }}
                     icon = {
                     <Icon
@@ -36,6 +36,7 @@ export default class NoteDisplayHeaderBar extends React.Component{
                 <Button
                     type = "clear" 
                     onPress={() =>{
+                        this.props.setAnimationType('goToNoteEdit');
                         this.props.navigation.navigate('noteCreation',{
                             note: this.props.note
                         });
