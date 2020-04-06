@@ -36,6 +36,9 @@ export default class NoteDisplayHeaderBar extends React.Component{
                 <Button
                     type = "clear" 
                     onPress={() =>{
+                        this.props.navigation.navigate('noteCreation',{
+                            note: this.props.note
+                        });
                     }}
                     icon = {
                     <Icon

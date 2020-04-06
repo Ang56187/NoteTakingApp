@@ -14,7 +14,7 @@ export default class CheckBoxTextInput extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            isChecked: (this.props.editable ? false : this.props.ele.isChecked),
+            isChecked: (this.props.ele.isChecked),
             textInput: this.props.ele.text,
             textInputHeight: new Animated.Value(50),
             animateBorderWidth: new Animated.Value(0)

@@ -24,7 +24,6 @@ export default class ScrollViewNotes extends React.Component{
 
        this.scrollIndex;
        this.scrollY;
-
     }
 
 

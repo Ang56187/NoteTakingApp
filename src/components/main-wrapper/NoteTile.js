@@ -16,10 +16,11 @@ export default class NoteTile extends React.Component{
 
     //only render changes when needed
     shouldComponentUpdate(prevProps,prevState){
-        if(prevProps.title !== this.props.title){
+        if(prevProps.title !== this.props.item.title ||
+            prevProps.backColor !== this.props.item.backColor){
             return true;
         }
-        return false
+        return false;
     }
     
     componentDidMount(){

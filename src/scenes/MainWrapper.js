@@ -75,7 +75,7 @@ export default class MainWrapper extends React.Component{
                         const minute = e.dateTime.substring(14,16)
                         const second = e.dateTime.substring(17,19)
                         const date = (new Date(year,month,day,hour,minute,second).toLocaleString());
-    
+                        
     
                         let newNote = new Note(e.id,e.title,e.firstNote,date,(e.isFavourited===1?true:false),
                         e.backColor,e.textColor)
@@ -87,7 +87,7 @@ export default class MainWrapper extends React.Component{
                             _array.forEach(e=>{
                                 let component={
                                     id : e.contentID,
-                                    noteType : e.noteType,
+                                    type : e.noteType,
                                     text : e.content,
                                     isChecked : (e.isChecked === 1 ? true : false),
                                     noteID : e.noteID}
@@ -108,6 +108,7 @@ export default class MainWrapper extends React.Component{
         })
 
     }//end constructor
+    
 
     componentDidMount(){
         db.transaction(tx=>{
@@ -136,7 +137,7 @@ export default class MainWrapper extends React.Component{
                         _array.forEach(e=>{
                             let component={
                                 id : e.contentID,
-                                noteType : e.noteType,
+                                type : e.noteType,
                                 text : e.content,
                                 isChecked : (e.isChecked===1?true:false),
                                 noteID : e.noteID}
@@ -267,7 +268,9 @@ export default class MainWrapper extends React.Component{
                         onPress = {()=>{
                             //TODO
                             this.props.setAnimationType("goToNoteCreation");
-                            this.props.navigation.navigate('noteCreation');
+                            this.props.navigation.navigate('noteCreation',{
+                                note: null
+                            });
                         }
                         }
                     /> 

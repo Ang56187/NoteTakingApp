@@ -18,24 +18,24 @@ const deviceHeight = Math.round(Dimensions.get('window').height);
 
 const db = SQLite.openDatabase("db.db");
 
-
 export default class NoteCreationPage extends React.Component{
     constructor(props){
         super(props);
+        const {note} = this.props.route.params;
         this.state = {
-            titleTextInput: '',
+            titleTextInput: (note!==null ?note.title:''),
             titleTextInputHeight: new Animated.Value(50),
             showTitleError: false,
             showTitleEmpty: false,
-            textInput: '',
+            textInput: (note!==null ?note.firstNote:''),
             textInputHeight: new Animated.Value(50),
 
             //for color background setting
-            backColor: '#21B2F2',
-            lighterBackColor : new color('#21B2F2').lighten(0.1),
-            lighterBorderColor: new color('#21B2F2').lighten(0.6),
+            backColor: (note!==null ? note.backColor : "#21B2F2"),
+            lighterBackColor : (note!==null ? new color(note.backColor).lighten(0.1) : new color("#21B2F2").lighten(0.1)),
+            lighterBorderColor: (note!==null ? new color(note.backColor).lighten(0.6) : new color("#21B2F2").lighten(0.6)),
             //for text color setting
-            textColor: '#ffffff',
+            textColor: (note!==null ? note.textColor : "#ffffff"),
 
             //for on focus animation
             animateTitleBorderWidth: new Animated.Value(0),
@@ -43,12 +43,13 @@ export default class NoteCreationPage extends React.Component{
 
 
             //for storing checkboxes/options/notifications/normal text..
-            componentArr: [],
+            componentArr: (note!==null ? note.content : []),
             disabled: false,
 
             test: null
         }
 
+        this.note = this.props.route.params.note;
         this.addNewEle = false;
         //starts index of components at 0
         this.index = 0;
@@ -206,6 +207,52 @@ export default class NoteCreationPage extends React.Component{
         if(this.state.titleTextInput == ""){
             this.setState({showTitleEmpty : true});
         }
+        else if(this.note!== null){
+            // console.log(this.state.titleTextInput)
+            // console.log(this.state.textInput)
+            //TODO
+            //later when implement favourite feature be sure to alter this code
+            db.transaction(tx=>{
+                //1. update note first
+                tx.executeSql('update notes set title = ?, '+
+                'firstNote = ? , isFavourited = ? , backColor = ?, textColor = ?'+
+                'where id = ? ',               
+                [this.state.titleTextInput,this.state.textInput,0,this.state.backColor,this.state.textColor,this.note.id],
+                //success
+                (_,ResultSet)=>{console.log(ResultSet.rows);},
+                //fail
+                (_,error)=>{console.log(error)}
+                )
+                //TODO
+                //changes need to be made here for optimization
+                //once found out how to alter content one by one without deleting everything
+                //2. delete every contents
+                tx.executeSql('delete from noteContent where noteID = ?',[this.note.id],
+                //success
+                (_,ResultSet)=>{console.log(ResultSet)},
+                //fail
+                (_,error)=>{console.log(error)}
+                ),
+                //3. changes for contents in that note
+                tx.executeSql('select id from notes where id = ?',[this.note.id],
+                (_,{rows:{_array}})=>{
+                    _array.forEach(e=>{
+                        //execute once found out added id, added the checkboxes,pointers etc from dupeArr
+                        this.state.componentArr.forEach(ele=>{
+                            tx.executeSql('insert into noteContent (noteType,content,isChecked,noteID)'+
+                            'values(?,?,?,?)',
+                            [ele.type,ele.text,(ele.isChecked ? 1 : 0),e.id],
+                            (_,{rows})=>{console.log(rows)},
+                            (_,error)=>{console.log(error)})            
+                        });
+                    })
+                },
+                //fail
+                (_,error)=>{console.log(error)})
+            })
+            //end db transaction
+            this.props.navigation.navigate('home')
+        }
         else{   
             //heres the constructor of note
             //(id,title,content,dateTime,isFavourited,backColor,textColor)
@@ -252,11 +299,13 @@ export default class NoteCreationPage extends React.Component{
                 //fail
                 (_,error)=>{console.log(error)})
             })
+            //end db transaction
             this.props.navigation.navigate('home')
         }
     }
 
     render(){
+
         return(
             <Animated.View style={styles.container}>
                 <View style = {{

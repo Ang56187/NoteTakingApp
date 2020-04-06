@@ -47,6 +47,8 @@ export default class NoteDisplayPage extends React.Component{
                     {/* The header with 2 buttons and text in middle */}
                     <NoteDisplayHeaderBar
                         navigation = {this.props.navigation}
+                        route = {this.props.route}
+                        note = {this.props.route.params.note}
                     />
                         <ScrollView 
                             contentContainerStyle={styles.scrollStyle}
@@ -75,7 +77,7 @@ export default class NoteDisplayPage extends React.Component{
                             </Text>
 
                             {this.state.componentArr.map(ele=>{
-                                if(ele.noteType === 'checkbox'){
+                                if(ele.type === 'checkbox'){
                                     return (
                                         <CheckBoxTextInput
                                             key= {ele.id}
@@ -87,7 +89,7 @@ export default class NoteDisplayPage extends React.Component{
                                         />
                                     )
                                 }
-                                if(ele.noteType === 'pointer'){
+                                if(ele.type === 'pointer'){
                                     return (
                                         <PointerTextInput
                                             key= {ele.id}
